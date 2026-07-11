@@ -14,3 +14,14 @@ dist/
 # Локальные бэкапы и экспорты данных
 *.backup.json
 exports/
+
+# Бэкапы и данные приложения (личные финансы — никогда не пушить!)
+ledger_*.json
+*_backup.json
+transactions_merge.json
+crypto_merge.json
+
+# Выгрузки банков и бирж
+*.pdf
+*.xlsx
+*.csv
