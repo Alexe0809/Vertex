@@ -4,36 +4,12 @@
    Использует глобальный Chart (из CDN)
    ========================================================= */
 
+import { NAV, DEFAULT_ASSET_TYPES, ASSET_CLASS_COLORS, getColorForClass, STORAGE_KEY} from './src/config.js';
 import { ICONS, icon } from './src/icons.js';
+import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey} from './src/utils.js';
 
 const Chart = window.Chart || null;
 if (!Chart) console.warn('Chart.js не загрузился (нет сети/CDN) — графики будут скрыты, остальное работает.');
-// ======= CONFIG =======
-const NAV = [
-  { id: 'dashboard', label: 'Дашборд', icon: 'grid', sub: 'Сводка по капиталу и движению средств' },
-  { id: 'transactions', label: 'Транзакции', icon: 'list', sub: 'Доходы и расходы, включая инвестиции' },
-  { id: 'portfolio', label: 'Портфель', icon: 'layers', sub: 'Активы, созданные из транзакций' },
-  { id: 'prices', label: 'Цены', icon: 'trend', sub: 'Актуальные цены активов с бирж' },
-  { id: 'reports', label: 'Отчёты', icon: 'bars', sub: 'Разбор по категориям и периодам' },
-  { id: 'forecast', label: 'Прогноз', icon: 'trend', sub: 'Цели и проекция капитала' },
-  { id: 'settings', label: 'Настройки', icon: 'gear', sub: 'Категории, курсы, бэкапы, журнал' },
-];
-
-const DEFAULT_ASSET_TYPES = {
-  crypto: { label: 'Криптовалюта', tickers: ['BTC','ETH','USDT','BNB','SOL','XRP','ADA','DOT','DOGE','LTC','TRX','LINK'] },
-  stocks: { label: 'Акции', tickers: ['AAPL','TSLA','NVDA','MSFT','AMZN','GOOGL','META','BRK.B','JPM','V','PG','JNJ','WMT','MA','KO'] },
-  metals: { label: 'Металлы', tickers: ['Золото','Серебро','Платина','Палладий'] },
-  lent: { label: 'Займы выданные', tickers: ['BYN','USD','EUR','RUB'] },
-};
-
-const ASSET_CLASS_COLORS = { cash:'#6E8FD9', crypto:'#D4A24C', stocks:'#4FAE7C', metals:'#E0C36B', deposit:'#9B7FD4', lent:'#D9685F' };
-function getColorForClass(cls) { return ASSET_CLASS_COLORS[cls] || '#8891A8'; }
-function getClassLabel(cls) {
-  if (cls === 'cash') return 'Кэш';
-  return state.assetTypes[cls] ? state.assetTypes[cls].label : cls;
-}
-
-const STORAGE_KEY = 'ledgerBudgetApp_v16';
 
 // ======= STATE =======
 let state = null;
@@ -58,6 +34,11 @@ function defaultState() {
     schemaVersion: 17,
     ui: { view: 'dashboard', txFilter: { type:'all', category:'all', q:'' }, reportMonths:6 }
   };
+}
+
+function getClassLabel(cls) {
+  if (cls === 'cash') return 'Кэш';
+  return state.assetTypes[cls] ? state.assetTypes[cls].label : cls;
 }
 
 // Миграция схемы: дополняет недостающие поля у старых данных, ничего не удаляя
@@ -108,11 +89,6 @@ function logAction(action, summary) {
 }
 
 // ======= FORMATTERS =======
-function fmt(n, d=2) { return new Intl.NumberFormat('ru-RU', {minimumFractionDigits:d, maximumFractionDigits:d}).format(n||0); }
-function fmtUSD(n) { return '$'+fmt(n,2); }
-function fmtPct(n) { return (n>=0?'+':'')+fmt(n,1)+'%'; }
-function fmtDate(iso) { if(!iso) return '—'; const d=new Date(iso); return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-function fmtDateTime(iso) { const d=new Date(iso); return d.toLocaleDateString('ru-RU')+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function rateFor(cur) {
   if (cur === 'BYN') return 1;
@@ -120,7 +96,7 @@ function rateFor(cur) {
   console.warn(`Курс для валюты «${cur}» не задан — принят 1:1. Добавьте курс в Настройках.`);
   return 1;
 }
-function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
+
 
 // ======= TOAST & MODAL =======
 function toast(msg, kind) {
@@ -499,7 +475,7 @@ function computeTotalCapital(forceAccrued) {
 }
 
 // ======= МЕСЯЧНЫЕ ПОТОКИ (исключаем депозиты) =======
-function monthKey(iso) { return iso.slice(0,7); }
+
 // Бухгалтерская логика:
 //  - доход/расход = только реальные денежные потоки (зарплата, еда, ...);
 //  - покупка/продажа актива — это перемещение капитала (кэш <-> актив), а не доход/расход,
