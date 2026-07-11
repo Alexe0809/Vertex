@@ -6,86 +6,18 @@
 
 import { NAV, DEFAULT_ASSET_TYPES, ASSET_CLASS_COLORS, getColorForClass, STORAGE_KEY} from './src/config.js';
 import { ICONS, icon } from './src/icons.js';
-import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey} from './src/utils.js';
+import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey, uid} from './src/utils.js';
+import { state, setState, load, save, logAction, migrateState, defaultState } from './src/state.js';
 
 const Chart = window.Chart || null;
 if (!Chart) console.warn('Chart.js не загрузился (нет сети/CDN) — графики будут скрыты, остальное работает.');
 
 // ======= STATE =======
-let state = null;
 let charts = {};
-
-function defaultState() {
-  return {
-    transactions: [],
-    assets: [],
-    deposits: [],
-    snapshots: [],
-    goals: [],
-    rates: { USD: 3.4, EUR: 3.6, RUB: 0.037 },
-    categories: {
-      income: ['Зарплата','Стипендия/аванс','Подарок','Возврат долга','Проценты/доход','Прочее'],
-      expense: ['Еда','Транспорт','Жильё','Учёба','Развлечения','Покупки','Перевод в MoneyBox','Долг (выдан)','Прочее']
-    },
-    assetTypes: JSON.parse(JSON.stringify(DEFAULT_ASSET_TYPES)),
-    marketPrices: {},
-    log: [],
-    settings: { expectedReturnPct: 5 }, // ожидаемая реальная годовая доходность для прогноза FIRE
-    schemaVersion: 17,
-    ui: { view: 'dashboard', txFilter: { type:'all', category:'all', q:'' }, reportMonths:6 }
-  };
-}
 
 function getClassLabel(cls) {
   if (cls === 'cash') return 'Кэш';
   return state.assetTypes[cls] ? state.assetTypes[cls].label : cls;
-}
-
-// Миграция схемы: дополняет недостающие поля у старых данных, ничего не удаляя
-function migrateState(s) {
-  const def = defaultState();
-  if (!s.assetTypes) s.assetTypes = def.assetTypes;
-  if (!s.ui) s.ui = def.ui;
-  if (!s.ui.txFilter) s.ui.txFilter = def.ui.txFilter;
-  if (!s.marketPrices) s.marketPrices = {};
-  if (!s.deposits) s.deposits = [];
-  if (!s.snapshots) s.snapshots = [];
-  if (!s.goals) s.goals = [];
-  if (!s.log) s.log = [];
-  if (!s.settings) s.settings = def.settings;
-  if (typeof s.settings.expectedReturnPct !== 'number') s.settings.expectedReturnPct = 5;
-  if (typeof s.settings.depositsPrincipalOnly !== 'boolean') s.settings.depositsPrincipalOnly = false;
-  // Связываем депозитные транзакции с депозитами по id (раньше связи не было)
-  s.transactions.forEach(t => {
-    if (t.txType === 'deposit' && !t.depositId && t.depositData) {
-      const dep = s.deposits.find(d =>
-        d.amount === t.depositData.amount &&
-        d.currency === t.depositData.currency &&
-        d.startDate === t.depositData.startDate
-      );
-      if (dep) t.depositId = dep.id;
-    }
-  });
-  s.schemaVersion = 17;
-  return s;
-}
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      state = migrateState(JSON.parse(raw));
-      return;
-    }
-  } catch (e) { console.error('load failed', e); }
-  state = defaultState();
-}
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { toast('Не удалось сохранить в локальное хранилище','danger'); }
-}
-function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function logAction(action, summary) {
-  state.log.unshift({ id:uid(), ts:new Date().toISOString(), action, summary });
-  if (state.log.length > 500) state.log.length = 500;
 }
 
 // ======= FORMATTERS =======
@@ -2639,7 +2571,7 @@ document.getElementById('importFile').addEventListener('change', e => {
       // ==== Обычный бэкап: полная замена ====
       if (!data.transactions || !data.assets) throw new Error('bad format');
       if (!confirm('Текущие данные будут заменены содержимым файла. Продолжить?')) return;
-      state = migrateState(data);
+      setState(migrateState(data));
       logAction('backup_import', `Восстановлено из файла: ${file.name}`);
       save(); renderAll();
       toast('Данные восстановлены');
@@ -2652,7 +2584,7 @@ document.getElementById('importFile').addEventListener('change', e => {
 function resetAllData() {
   if (!confirm('Удалить ВСЕ данные?')) return;
   if (!confirm('Это действие нельзя отменить. Точно?')) return;
-  state = defaultState();
+  setState(defaultState());
   save(); renderAll();
   toast('Все данные очищены', 'danger');
 }
