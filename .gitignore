@@ -1,0 +1,16 @@
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Node (пригодится на этапе Vite)
+node_modules/
+dist/
+
+# Локальные бэкапы и экспорты данных
+*.backup.json
+exports/

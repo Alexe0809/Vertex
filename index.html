@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ledger — личный бюджет</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="app">
+        <aside class="sidebar" id="sidebar"></aside>
+        <div class="main">
+            <div class="mobile-topbar" id="mobileNav"></div>
+            <div class="topbar">
+                <div class="topbar-row">
+                    <div>
+                        <div class="page-title" id="pageTitle">Дашборд</div>
+                        <div class="page-sub" id="pageSub">Сводка по капиталу и движению средств</div>
+                    </div>
+                    <div class="topbar-actions" id="pageActions"></div>
+                </div>
+                <div class="ticker" id="ticker"></div>
+            </div>
+            <main id="views"></main>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal" id="modalBody"></div>
+    </div>
+    <div id="toast-wrap"></div>
+    <input type="file" id="importFile" accept="application/json" style="display:none" />
+
+    <script src="app.js"></script>
+</body>
+</html>
