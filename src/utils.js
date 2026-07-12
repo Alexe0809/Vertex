@@ -7,3 +7,6 @@ export function fmtDateTime(iso) { const d=new Date(iso); return d.toLocaleDateS
 export function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
 export function monthKey(iso) { return iso.slice(0,7); }
 export function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+export function txAmountBYN(t) {
+  return (Number(t.amount) || 0) * (Number(t.rate) || 1);
+}
