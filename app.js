@@ -8,6 +8,11 @@ import { NAV, DEFAULT_ASSET_TYPES, ASSET_CLASS_COLORS, getColorForClass, STORAGE
 import { ICONS, icon } from './src/icons.js';
 import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey, uid} from './src/utils.js';
 import { state, setState, load, save, logAction, migrateState, defaultState } from './src/state.js';
+import { rateFor } from './src/core/rates.js';
+import { depositElapsedMonths, isDepositMatured, computeDepositAccruedValue,
+         computeDepositFinalAmount, computeDepositProfit,
+         computeDepositsTotal, computeDepositsTotalProfit } from './src/core/deposits.js';
+
 
 const Chart = window.Chart || null;
 if (!Chart) console.warn('Chart.js не загрузился (нет сети/CDN) — графики будут скрыты, остальное работает.');
@@ -22,12 +27,6 @@ function getClassLabel(cls) {
 
 // ======= FORMATTERS =======
 function todayISO() { return new Date().toISOString().slice(0,10); }
-function rateFor(cur) {
-  if (cur === 'BYN') return 1;
-  if (state.rates[cur] !== undefined) return state.rates[cur];
-  console.warn(`Курс для валюты «${cur}» не задан — принят 1:1. Добавьте курс в Настройках.`);
-  return 1;
-}
 
 
 // ======= TOAST & MODAL =======
@@ -289,69 +288,6 @@ function txAmountBYN(t) {
 }
 
 // ======= ДЕПОЗИТЫ (исправлены: теперь считаем по факту) =======
-const AVG_DAYS_PER_MONTH = 30.4368;
-function depositElapsedMonths(deposit, asOfDate) {
-  const start = new Date(deposit.startDate);
-  const asOf = asOfDate ? new Date(asOfDate) : new Date();
-  let elapsed = (asOf - start) / (1000 * 60 * 60 * 24 * AVG_DAYS_PER_MONTH);
-  if (!isFinite(elapsed) || elapsed < 0) elapsed = 0;
-  return Math.min(elapsed, deposit.termMonths);
-}
-function isDepositMatured(deposit) {
-  return depositElapsedMonths(deposit, new Date()) >= deposit.termMonths;
-}
-function computeDepositAccruedValue(deposit, asOfDate) {
-  const rate = deposit.rate / 100;
-  const months = depositElapsedMonths(deposit, asOfDate);
-  const principal = deposit.amount;
-  if (deposit.capitalization) {
-    // Банковская капитализация дискретна: проценты присоединяются раз в месяц,
-    // за неполный текущий месяц начисляется простой процент на накопленную базу.
-    const monthlyRate = rate / 12;
-    const whole = Math.floor(months);
-    const frac = months - whole;
-    return principal * Math.pow(1 + monthlyRate, whole) * (1 + monthlyRate * frac);
-  } else {
-    return principal * (1 + rate * months / 12);
-  }
-}
-function computeDepositFinalAmount(deposit) {
-  const rate = deposit.rate / 100;
-  const months = deposit.termMonths;
-  const principal = deposit.amount;
-  if (deposit.capitalization) {
-    const monthlyRate = rate / 12;
-    return principal * Math.pow(1 + monthlyRate, months);
-  } else {
-    return principal * (1 + rate * months / 12);
-  }
-}
-function computeDepositProfit(deposit) {
-  return computeDepositFinalAmount(deposit) - deposit.amount;
-}
-
-// ИСПРАВЛЕНО: используем computeDepositAccruedValue вместо финальной суммы
-function computeDepositsTotal(forceAccrued) {
-  // Режим «только вложенное»: депозиты по телу, без накопленных процентов.
-  // forceAccrued=true игнорирует настройку (для снимков — они всегда по факту).
-  const principalOnly = !forceAccrued && state.settings && state.settings.depositsPrincipalOnly;
-  let total = 0;
-  state.deposits.forEach(d => {
-    if (d.closed) return; // деньги уже вернулись в кэш — иначе будет двойной счёт
-    const val = principalOnly ? d.amount : computeDepositAccruedValue(d);
-    total += val * rateFor(d.currency);
-  });
-  return total;
-}
-function computeDepositsTotalProfit() {
-  let totalProfit = 0;
-  state.deposits.forEach(d => {
-    if (d.closed) return;
-    const profit = computeDepositAccruedValue(d) - d.amount;
-    totalProfit += profit * rateFor(d.currency);
-  });
-  return totalProfit;
-}
 
 // Закрытие депозита: тело возвращается в кэш как перевод (не доход),
 // а начисленные проценты признаются доходом («Проценты/доход»).
@@ -399,7 +335,6 @@ function closeDeposit(depositId) {
   save(); renderAll();
   toast('Депозит закрыт, средства зачислены в кэш');
 }
-
 function computeTotalCapital(forceAccrued) {
   const portfolio = computePortfolioTotals().total;
   const depositsTotal = computeDepositsTotal(forceAccrued);
