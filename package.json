@@ -1,0 +1,24 @@
+{
+  "name": "ledger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexe0809/Ledger.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alexe0809/Ledger/issues"
+  },
+  "homepage": "https://github.com/Alexe0809/Ledger#readme",
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
