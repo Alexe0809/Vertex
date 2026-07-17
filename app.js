@@ -14,7 +14,8 @@ import { depositElapsedMonths, isDepositMatured, computeDepositAccruedValue,
 import { computeAssetQuantity, computeXIRR, refreshAssets, assetValueBYN,
          computePortfolioTotals, computeTotalCapital } from './src/core/portfolio.js';
 import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey, uid, txAmountBYN } from './src/utils.js';
-
+import { toast, openModal, closeModal, initModals, escapeHtml} from './src/ui/dom.js';
+import { renderSidebar, renderMobileNav, renderTicker} from './src/ui/shell.js';
 
 const Chart = window.Chart || null;
 if (!Chart) console.warn('Chart.js не загрузился (нет сети/CDN) — графики будут скрыты, остальное работает.');
@@ -31,25 +32,6 @@ function getClassLabel(cls) {
 function todayISO() { return new Date().toISOString().slice(0,10); }
 
 
-// ======= TOAST & MODAL =======
-function toast(msg, kind) {
-  const wrap = document.getElementById('toast-wrap');
-  const el = document.createElement('div');
-  el.className = 'toast' + (kind === 'danger' ? ' danger' : '');
-  el.textContent = msg;
-  wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .25s'; setTimeout(() => el.remove(), 250); }, 3200);
-}
-function openModal(html) {
-  document.getElementById('modalBody').innerHTML = html;
-  document.getElementById('modalBackdrop').classList.add('active');
-}
-function closeModal() {
-  document.getElementById('modalBackdrop').classList.remove('active');
-  document.getElementById('modalBody').innerHTML = '';
-}
-document.getElementById('modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // ======= РАБОТА С АКТИВАМИ =======
 
@@ -208,69 +190,6 @@ function linearForecast(points) {
   return { slope, intercept };
 }
 
-// ======= SHELL =======
-function renderSidebar() {
-  const el = document.getElementById('sidebar');
-  el.innerHTML = `
-    <div class="brand">
-      <div class="brand-mark">$</div>
-      <div>
-        <div class="brand-text">Ledger</div>
-        <div class="brand-sub">Личный капитал</div>
-      </div>
-    </div>
-    <div class="nav-eyebrow">Навигация</div>
-    <div class="nav">
-      ${NAV.map(n => `<button class="nav-item ${state.ui.view === n.id ? 'active' : ''}" data-go="${n.id}">${icon(n.icon)}${n.label}</button>`).join('')}
-    </div>
-    <div class="sidebar-foot">
-      <div class="sidebar-foot-row"><span>Записей</span><span>${state.transactions.length}</span></div>
-      <div class="sidebar-foot-row"><span>Активов</span><span>${state.assets.length}</span></div>
-      <div class="sidebar-foot-row"><span>Депозитов</span><span>${state.deposits.length}</span></div>
-    </div>
-  `;
-  el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goTo(b.dataset.go)));
-}
-
-function renderMobileNav() {
-  const el = document.getElementById('mobileNav');
-  el.innerHTML = NAV.map(n => `<button class="${state.ui.view === n.id ? 'active' : ''}" data-go="${n.id}">${icon(n.icon)}${n.label}</button>`).join('');
-  el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goTo(b.dataset.go)));
-}
-
-function renderTicker() {
-  const totalCapital = computeTotalCapital();
-  const usdRate = state.rates.USD || 1;
-  const totalUSD = totalCapital / usdRate;
-  const el = document.getElementById('ticker');
-  const cashflow = computeMonthFlow(new Date().toISOString().slice(0,7));
-  const incomeUSD = cashflow.income / usdRate;
-  const expenseUSD = cashflow.expense / usdRate;
-  let html = `
-    <div class="ticker-chip">
-      <div class="ticker-label"><span class="ticker-dot" style="background:var(--accent)"></span>Капитал, BYN</div>
-      <div class="ticker-value">${fmt(totalCapital,2)}</div>
-    </div>
-    <div class="ticker-chip">
-      <div class="ticker-label"><span class="ticker-dot" style="background:var(--accent)"></span>Капитал, USD</div>
-      <div class="ticker-value">${fmt(totalUSD,2)}</div>
-    </div>
-    <div class="ticker-chip">
-      <div class="ticker-label"><span class="ticker-dot" style="background:var(--positive)"></span>Доход/мес</div>
-      <div class="ticker-value" style="color:var(--positive)">${fmt(cashflow.income,0)} BYN / ${fmt(incomeUSD,0)} USD</div>
-    </div>
-    <div class="ticker-chip">
-      <div class="ticker-label"><span class="ticker-dot" style="background:var(--negative)"></span>Расход/мес</div>
-      <div class="ticker-value" style="color:var(--negative)">${fmt(cashflow.expense,0)} BYN / ${fmt(expenseUSD,0)} USD</div>
-    </div>
-    <div class="ticker-chip">
-      <div class="ticker-label"><span class="ticker-dot" style="background:var(--info)"></span>Инвестировано/мес</div>
-      <div class="ticker-value" style="color:var(--info)">${fmt(cashflow.invested,0)} BYN</div>
-    </div>
-  `;
-  el.innerHTML = html;
-}
-
 function goTo(viewId) {
   state.ui.view = viewId;
   save();
@@ -281,9 +200,9 @@ function goTo(viewId) {
 const RENDERERS = {};
 
 function renderAll() {
-  renderSidebar();
-  renderMobileNav();
-  renderTicker();
+  renderSidebar(goTo);
+  renderMobileNav(goTo);
+  renderTicker(computeMonthFlow(new Date().toISOString().slice(0,7)));
   const navItem = NAV.find(n => n.id === state.ui.view) || NAV[0];
   document.getElementById('pageTitle').textContent = navItem.label;
   document.getElementById('pageSub').textContent = navItem.sub;
@@ -293,10 +212,6 @@ function renderAll() {
 
 function setActions(html) {
   document.getElementById('pageActions').innerHTML = html;
-}
-
-function escapeHtml(s) {
-  return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 }
 
 // ======= VIEW: PRICES (ручной ввод) =======
@@ -2347,4 +2262,5 @@ window.closeModal = closeModal;
 
 // ======= INIT =======
 load();
+initModals();
 renderAll();
