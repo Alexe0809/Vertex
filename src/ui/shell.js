@@ -1,4 +1,4 @@
-// ======= SHELL =======
+﻿// ======= SHELL =======
 import { NAV } from '../config.js';
 import { icon } from '../icons.js';
 import { state } from '../state.js';
@@ -9,9 +9,9 @@ export function renderSidebar(goTo) {
   const el = document.getElementById('sidebar');
   el.innerHTML = `
     <div class="brand">
-      <div class="brand-mark">$</div>
+      <div class="brand-mark"><svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><defs><linearGradient id="vgoldMark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5EBD3"/><stop offset="0.5" stop-color="#E6D7B8"/><stop offset="1" stop-color="#AE8B4E"/></linearGradient></defs><path d="M13 21 L25 45 L31 33" fill="none" stroke="url(#vgoldMark)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/><path d="M25 19 L37 45 L51 19" fill="none" stroke="url(#vgoldMark)" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div>
-        <div class="brand-text">Ledger</div>
+        <div class="brand-text">Vertex</div>
         <div class="brand-sub">Личный капитал</div>
       </div>
     </div>

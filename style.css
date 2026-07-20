@@ -282,3 +282,125 @@ td.amt{font-family:var(--font-mono);font-weight:500;text-align:right;}
   .topbar-row{padding:14px 16px 10px;flex-wrap:wrap;}
   .view{padding:16px 16px 50px;}
 }
+
+/* ============================================================
+   VERTEX THEME — премиальный слой поверх базовой темы
+   Палитра: белое золото #E6D7B8, глубокий графит, стекло.
+   Анимации: 200–300ms, cubic-bezier(0.4, 0, 0.2, 1)
+   ============================================================ */
+:root{
+  --bg:#0A0D14;
+  --bg-elev:rgba(17,21,34,0.72);
+  --surface:rgba(22,27,42,0.62);
+  --surface-2:rgba(30,37,58,0.72);
+  --border:rgba(230,215,184,0.10);
+  --border-soft:rgba(230,215,184,0.06);
+  --text:#EDEBE4;
+  --text-dim:#9AA0B4;
+  --text-faint:#636B84;
+  --accent:#E6D7B8;
+  --accent-2:#C9A96A;
+  --accent-soft:rgba(230,215,184,0.10);
+  --accent-text:#141008;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body{
+  background:
+    radial-gradient(1100px 600px at 85% -10%, rgba(201,169,106,0.10), transparent 60%),
+    radial-gradient(900px 700px at -10% 110%, rgba(110,143,217,0.07), transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+}
+
+/* ---- Стекло: сайдбар и карточки ---- */
+.sidebar{
+  background:rgba(13,16,26,0.66);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-right:1px solid var(--border-soft);
+}
+.card,.modal{
+  background:var(--surface);
+  backdrop-filter:blur(14px) saturate(130%);
+  -webkit-backdrop-filter:blur(14px) saturate(130%);
+  border:1px solid var(--border);
+  box-shadow:0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 28px rgba(0,0,0,0.35);
+}
+
+/* ---- Брендинг ---- */
+.brand-mark{
+  background:linear-gradient(145deg,#12162200,#12162200);
+  border:1px solid var(--border);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 22px rgba(230,215,184,0.10);
+}
+.brand-text{
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  font-weight:600;
+  background:linear-gradient(120deg,#F5EBD3,#E6D7B8 45%,#B8935A);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+}
+
+/* ---- Смена экранов: мягкий fade/slide ---- */
+@keyframes vertexIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+#views > *{animation:vertexIn 280ms var(--ease) both;}
+#views > *:nth-child(2){animation-delay:40ms;}
+#views > *:nth-child(3){animation-delay:80ms;}
+#views > *:nth-child(4){animation-delay:120ms;}
+
+/* ---- Микро-взаимодействия ---- */
+.btn,.nav-item,.icon-btn,.card,.ticker-chip,.list-row,.tag{
+  transition:transform 220ms var(--ease), box-shadow 240ms var(--ease),
+             background 200ms var(--ease), color 200ms var(--ease),
+             border-color 200ms var(--ease), opacity 200ms var(--ease);
+}
+.btn:hover{transform:translateY(-1px);}
+.btn:active{transform:translateY(0) scale(0.98);transition-duration:90ms;}
+.btn-accent{
+  background:linear-gradient(135deg,#F0E3C6,#D9C296 55%,#B8935A);
+  color:var(--accent-text);
+  border:none;
+  box-shadow:0 4px 16px rgba(201,169,106,0.28);
+}
+.btn-accent:hover{box-shadow:0 6px 22px rgba(201,169,106,0.40);}
+.icon-btn:hover{transform:translateY(-1px);color:var(--accent);}
+.icon-btn:active{transform:scale(0.94);}
+.nav-item{border-radius:9px;}
+.nav-item:hover{background:rgba(230,215,184,0.06);transform:translateX(2px);}
+.nav-item.active{
+  background:linear-gradient(120deg,rgba(230,215,184,0.14),rgba(230,215,184,0.05));
+  color:var(--accent);
+  box-shadow:0 0 0 1px rgba(230,215,184,0.14) inset;
+}
+.card:hover{border-color:rgba(230,215,184,0.18);}
+.ticker-chip:hover{transform:translateY(-1px);border-color:rgba(230,215,184,0.20);}
+
+/* ---- Модалка и тосты ---- */
+@keyframes vertexModal{
+  from{opacity:0;transform:translateY(14px) scale(0.985);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.modal{animation:vertexModal 260ms var(--ease) both;}
+.modal-backdrop{
+  background:rgba(6,8,13,0.55);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  transition:opacity 220ms var(--ease);
+}
+@keyframes vertexToast{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+#toast-wrap > *{animation:vertexToast 240ms var(--ease) both;}
+
+/* ---- Доступность: уважение к reduce motion ---- */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}

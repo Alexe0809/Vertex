@@ -21,7 +21,7 @@ import { renderTransactions, openTxModal, deleteTx } from './src/ui/views/transa
 import { renderPortfolio, openEditAssetModal, deleteAsset, openAssetHistory } from './src/ui/views/portfolio.js';
 import { renderReports } from './src/ui/views/reports.js';
 import { renderSettings } from './src/ui/views/settings.js';
-
+  
 const Chart = window.Chart || null;
 if (!Chart) console.warn('Chart.js не загрузился (нет сети/CDN) — графики будут скрыты, остальное работает.');
 
