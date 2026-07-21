@@ -25,3 +25,5 @@ crypto_merge.json
 *.pdf
 *.xlsx
 *.csv
+v2/node_modules/
+v2/dist/
