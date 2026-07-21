@@ -65,3 +65,12 @@ export function renderTicker(cashflow) {
   `;
   el.innerHTML = html;
 }
+
+
+export function initGreeting() {
+  const el = document.getElementById('greetLine');
+  if (!el) return;
+  const h = new Date().getHours();
+  const word = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
+  el.innerHTML = `${word}, Alexe <span class="wave">👋</span>`;
+}

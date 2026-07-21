@@ -1,4 +1,4 @@
-// src/ui/views/dashboard.js
+﻿// src/ui/views/dashboard.js
 import { computePortfolioTotals, computeTotalCapital } from '../../core/portfolio.js';
 import { computeDepositsTotal } from '../../core/deposits.js';
 import { state } from '../../state.js';
@@ -52,7 +52,7 @@ export function renderDashboard(root, deps) {
               const cryptoShare = (byClass['crypto'] || 0) / total * 100;
               const stocksShare = (byClass['stocks'] || 0) / total * 100;
               if (cryptoShare > 50) { riskLevel = 'Высокий'; riskColor = 'var(--negative)'; }
-              else if (cryptoShare > 30 || stocksShare > 40) { riskLevel = 'Умеренный'; riskColor = '#f2c94a'; }
+              else if (cryptoShare > 30 || stocksShare > 40) { riskLevel = 'Умеренный'; riskColor = '#C98F4C'; }
               else { riskLevel = 'Низкий'; riskColor = 'var(--positive)'; }
             }
           
@@ -174,8 +174,8 @@ export function renderDashboard(root, deps) {
                 if (charts.capitalGrowth) charts.capitalGrowth.destroy();
                 charts.capitalGrowth = new Chart(canvasCap, {
                   type: 'line',
-                  data: { labels: capLabels, datasets: [{ label: 'Капитал, BYN', data: capData, borderColor: '#D4A24C', backgroundColor: 'rgba(212,162,76,0.1)', fill: true, tension: 0.2, pointRadius: 3 }] },
-                  options: { responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#8891A8' }, grid: { display: false } }, y: { ticks: { color: '#8891A8' }, grid: { color: '#1D2540' } } }, plugins: { legend: { display: false } } }
+                  data: { labels: capLabels, datasets: [{ label: 'Капитал, BYN', data: capData, borderColor: '#C9A96A', backgroundColor: 'rgba(201,169,106,0.14)', fill: true, tension: 0.2, pointRadius: 3 }] },
+                  options: { responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#6E6858' }, grid: { display: false } }, y: { ticks: { color: '#6E6858' }, grid: { color: 'rgba(28,25,18,0.07)' } } }, plugins: { legend: { display: false } } }
                 });
               }
           
@@ -189,11 +189,11 @@ export function renderDashboard(root, deps) {
                     datasets: [{
                       data: composition.map(c => c.value),
                       backgroundColor: composition.map(c => c.color),
-                      borderColor: '#161D2E',
+                      borderColor: '#FFFFFF',
                       borderWidth: 2
                     }]
                   },
-                  options: { plugins: { legend: { position: 'bottom', labels: { color: '#8891A8', font: { size: 10 }, boxWidth: 10, padding: 8 } } }, cutout: '60%' }
+                  options: { plugins: { legend: { position: 'bottom', labels: { color: '#6E6858', font: { size: 10 }, boxWidth: 10, padding: 8 } } }, cutout: '60%' }
                 });
               }
             }, 50);

@@ -10,20 +10,19 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
-<body>
+<body class="light">
     <div id="app">
         <aside class="sidebar" id="sidebar"></aside>
         <div class="main">
             <div class="mobile-topbar" id="mobileNav"></div>
             <div class="topbar">
-                <div class="topbar-row">
-                    <div>
-                        <div class="page-title" id="pageTitle">Дашборд</div>
-                        <div class="page-sub" id="pageSub">Сводка по капиталу и движению средств</div>
-                    </div>
+                <span id="pageTitle" hidden></span>
+                <span id="pageSub" hidden></span>
+                <span id="greetLine" hidden></span>
+                <div class="ticker-bar">
+                    <div class="ticker" id="ticker"></div>
                     <div class="topbar-actions" id="pageActions"></div>
                 </div>
-                <div class="ticker" id="ticker"></div>
             </div>
             <main id="views"></main>
         </div>

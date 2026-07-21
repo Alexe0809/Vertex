@@ -1,4 +1,4 @@
-import { state, save } from '../../state.js';
+﻿import { state, save } from '../../state.js';
 import { icon } from '../../icons.js';
 import { fmt, monthKey, txAmountBYN } from '../../utils.js';
 import { escapeHtml } from '../dom.js';
@@ -101,11 +101,11 @@ setActions(`
       charts.cashFlow = new Chart(canvasCash, {
         type: 'bar',
         data: { labels: monthLabels, datasets: [
-          { label: 'Доход', data: incomeSeries, backgroundColor: '#4FAE7C', borderRadius: 4 },
-          { label: 'Расход', data: expenseSeries, backgroundColor: '#D9685F', borderRadius: 4 },
-          { label: 'Сбережения', data: savingsSeries, backgroundColor: '#D4A24C', borderRadius: 4 }
+          { label: 'Доход', data: incomeSeries, backgroundColor: '#5FA382', borderRadius: 4 },
+          { label: 'Расход', data: expenseSeries, backgroundColor: '#C97B6C', borderRadius: 4 },
+          { label: 'Сбережения', data: savingsSeries, backgroundColor: '#C9A96A', borderRadius: 4 }
         ]},
-        options: { responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#8891A8' }, grid: { display: false } }, y: { ticks: { color: '#8891A8' }, grid: { color: '#1D2540' } } }, plugins: { legend: { labels: { color: '#8891A8', font: { size: 10 } } } } }
+        options: { responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#6E6858' }, grid: { display: false } }, y: { ticks: { color: '#6E6858' }, grid: { color: 'rgba(28,25,18,0.07)' } } }, plugins: { legend: { labels: { color: '#6E6858', font: { size: 10 } } } } }
       });
     }
     const canvasRoi = document.getElementById('chartAssetRoi');
@@ -114,8 +114,8 @@ setActions(`
       const sorted = assetRoiData.slice().sort((a,b) => b.roi - a.roi);
       charts.assetRoi = new Chart(canvasRoi, {
         type: 'bar',
-        data: { labels: sorted.map(a => a.name), datasets: [{ data: sorted.map(a => a.roi), backgroundColor: sorted.map(a => a.roi >= 0 ? '#4FAE7C' : '#D9685F'), borderRadius: 4 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#8891A8' }, grid: { color: '#1D2540' } }, y: { ticks: { color: '#8891A8' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+        data: { labels: sorted.map(a => a.name), datasets: [{ data: sorted.map(a => a.roi), backgroundColor: sorted.map(a => a.roi >= 0 ? '#5FA382' : '#C97B6C'), borderRadius: 4 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#6E6858' }, grid: { color: 'rgba(28,25,18,0.07)' } }, y: { ticks: { color: '#6E6858' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
       });
     }
     const canvasFlow = document.getElementById('chartFlow');
@@ -124,10 +124,10 @@ setActions(`
       charts.flow = new Chart(canvasFlow, {
         type: 'bar',
         data: { labels: monthLabels, datasets: [
-          { label: 'Доход', data: incomeSeries, backgroundColor: '#4FAE7C', borderRadius: 4 },
-          { label: 'Расход', data: expenseSeries, backgroundColor: '#D9685F', borderRadius: 4 }
+          { label: 'Доход', data: incomeSeries, backgroundColor: '#5FA382', borderRadius: 4 },
+          { label: 'Расход', data: expenseSeries, backgroundColor: '#C97B6C', borderRadius: 4 }
         ]},
-        options: { responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#8891A8' }, grid: { display: false } }, y: { ticks: { color: '#8891A8' }, grid: { color: '#1D2540' } } }, plugins: { legend: { labels: { color: '#8891A8' } } } }
+        options: { responsive: true, maintainAspectRatio: true, scales: { x: { ticks: { color: '#6E6858' }, grid: { display: false } }, y: { ticks: { color: '#6E6858' }, grid: { color: 'rgba(28,25,18,0.07)' } } }, plugins: { legend: { labels: { color: '#6E6858' } } } }
       });
     }
     const canvasExpense = document.getElementById('chartCatExpense');
@@ -135,7 +135,7 @@ setActions(`
       if (charts.catExpense) charts.catExpense.destroy();
       charts.catExpense = new Chart(canvasExpense, {
         type: 'doughnut',
-        data: { labels: catExpenseSorted.map(c => c[0]), datasets: [{ data: catExpenseSorted.map(c => c[1]), backgroundColor: ['#D9685F','#D4A24C','#9B7FD4','#6E8FD9','#4FAE7C','#E0C36B','#8891A8'], borderColor: '#161D2E', borderWidth: 2 }] },
+        data: { labels: catExpenseSorted.map(c => c[0]), datasets: [{ data: catExpenseSorted.map(c => c[1]), backgroundColor: ['#C08B6A','#D9B36C','#8F6E38','#B8935A','#7FA98C','#C9A468','#A29D8F'], borderColor: '#FFFFFF', borderWidth: 2 }] },
         options: { plugins: { legend: { display: false } }, cutout: '62%' }
       });
     }
@@ -144,7 +144,7 @@ setActions(`
       if (charts.catIncome) charts.catIncome.destroy();
       charts.catIncome = new Chart(canvasIncome, {
         type: 'doughnut',
-        data: { labels: catIncomeSorted.map(c => c[0]), datasets: [{ data: catIncomeSorted.map(c => c[1]), backgroundColor: ['#4FAE7C','#6E8FD9','#D4A24C','#9B7FD4','#E0C36B','#D9685F','#8891A8'], borderColor: '#161D2E', borderWidth: 2 }] },
+        data: { labels: catIncomeSorted.map(c => c[0]), datasets: [{ data: catIncomeSorted.map(c => c[1]), backgroundColor: ['#7FA98C','#B8935A','#D9B36C','#8F6E38','#C9A468','#C08B6A','#A29D8F'], borderColor: '#FFFFFF', borderWidth: 2 }] },
         options: { plugins: { legend: { display: false } }, cutout: '62%' }
       });
     }

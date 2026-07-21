@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
    Ledger — Личный бюджет (ПОЛНЫЙ ФАЙЛ, без модулей)
    Все баги исправлены. Работает через file:// и http://
    Использует глобальный Chart (из CDN)
@@ -15,7 +15,7 @@ import { computeAssetQuantity, computeXIRR, refreshAssets, assetValueBYN,
          computePortfolioTotals, computeTotalCapital } from './src/core/portfolio.js';
 import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey, uid, txAmountBYN } from './src/utils.js';
 import { toast, openModal, closeModal, initModals, escapeHtml} from './src/ui/dom.js';
-import { renderSidebar, renderMobileNav, renderTicker} from './src/ui/shell.js';
+import { renderSidebar, renderMobileNav, renderTicker, initGreeting } from './src/ui/shell.js';
 import { renderDashboard } from './src/ui/views/dashboard.js';
 import { renderTransactions, openTxModal, deleteTx } from './src/ui/views/transactions.js';
 import { renderPortfolio, openEditAssetModal, deleteAsset, openAssetHistory } from './src/ui/views/portfolio.js';
@@ -847,10 +847,10 @@ RENDERERS.forecast = function(root) {
     charts.forecast = new Chart(document.getElementById('chartForecast'), {
       type: 'line',
       data: { labels: projLabels, datasets: [
-        { label: 'Факт', data: solidData, borderColor: '#D4A24C', backgroundColor: 'rgba(212,162,76,.12)', fill: true, tension: .25, pointRadius: 3 },
-        { label: 'Прогноз', data: dashedData, borderColor: '#8891A8', borderDash: [6,4], fill: false, tension: .25, pointRadius: 2 }
+        { label: 'Факт', data: solidData, borderColor: '#C9A96A', backgroundColor: 'rgba(201,169,106,.14)', fill: true, tension: .25, pointRadius: 3 },
+        { label: 'Прогноз', data: dashedData, borderColor: '#A29D8F', borderDash: [6,4], fill: false, tension: .25, pointRadius: 2 }
       ]},
-      options: { scales: { x: { ticks: { color: '#8891A8', maxRotation:0, autoSkip:true }, grid: { display: false } }, y: { ticks: { color: '#8891A8' }, grid: { color: '#1D2540' } } }, plugins: { legend: { labels: { color: '#8891A8' } } } }
+      options: { scales: { x: { ticks: { color: '#6E6858', maxRotation:0, autoSkip:true }, grid: { display: false } }, y: { ticks: { color: '#6E6858' }, grid: { color: 'rgba(28,25,18,0.07)' } } }, plugins: { legend: { labels: { color: '#6E6858' } } } }
     });
   }
 };
@@ -968,4 +968,5 @@ window.closeModal = closeModal;
 // ======= INIT =======
 load();
 initModals();
+initGreeting();
 renderAll();
