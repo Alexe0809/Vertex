@@ -23,6 +23,8 @@ import { renderTransactions, openTxModal, deleteTx } from './src/ui/views/transa
 import { renderPortfolio, openEditAssetModal, deleteAsset, openAssetHistory } from './src/ui/views/portfolio.js';
 import { renderReports } from './src/ui/views/reports.js';
 import { renderSettings } from './src/ui/views/settings.js';
+import { renderPrices } from './src/ui/views/prices.js';
+import { renderForecast } from './src/ui/views/forecast.js';
   
 const Chart = window.Chart || null;
 if (!Chart) console.warn('Chart.js не загрузился (нет сети/CDN) — графики будут скрыты, остальное работает.');
@@ -222,79 +224,7 @@ function setActions(html) {
 }
 
 // ======= VIEW: PRICES (ручной ввод) =======
-RENDERERS.prices = function(root) {
-  setActions(`<button class="btn btn-accent" id="savePricesBtn">${icon('save')}Сохранить цены</button>`);
-  refreshAssets();
-
-  root.innerHTML = `
-    <div class="card">
-      <div class="card-title">Ручной ввод цен активов</div>
-      <div class="card-sub">Введите текущую цену в USD для каждого актива и нажмите «Сохранить цены».</div>
-      <div id="pricesTableWrap" style="margin-top:12px;">
-        <div style="text-align:center;padding:20px;color:var(--text-dim);">Загрузка...</div>
-      </div>
-    </div>
-  `;
-
-  function renderPricesEditor() {
-    const wrap = document.getElementById('pricesTableWrap');
-    const usdRate = state.rates.USD || 1;
-    const assets = state.assets.filter(a => a.class !== 'cash');
-    if (assets.length === 0) {
-      wrap.innerHTML = `<div class="empty">${icon('inbox')}<div class="empty-title">Нет инвестиционных активов</div><div class="empty-sub">Добавьте покупки активов, чтобы редактировать их цены.</div></div>`;
-      return;
-    }
-    let html = `<div class="table-wrap"><table>
-      <thead><tr><th>Актив</th><th>Тип</th><th>Кол-во</th><th style="text-align:right">Цена (USD)</th><th style="text-align:right">Цена (BYN)</th><th>Обновлено</th></tr></thead>
-      <tbody>`;
-    assets.forEach(a => {
-      const market = state.marketPrices[a.id] || {};
-      const priceUSD = market.priceUSD || a.priceUSD || 0;
-      const priceBYN = priceUSD * usdRate;
-      const lastUpdated = market.lastUpdated ? fmtDateTime(market.lastUpdated) : '—';
-      html += `<tr>
-        <td>${escapeHtml(a.name)}</td>
-        <td>${getClassLabel(a.class)}</td>
-        <td class="mono">${fmt(a.quantity,4)}</td>
-        <td><input type="number" step="0.0001" class="price-input" data-id="${a.id}" value="${priceUSD}" style="width:120px;background:var(--bg-elev);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);text-align:right;"></td>
-        <td class="mono" style="text-align:right">${fmt(priceBYN,4)}</td>
-        <td class="hint">${lastUpdated}</td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
-    wrap.innerHTML = html;
-  }
-
-  renderPricesEditor();
-
-  // ИСПРАВЛЕНО: раньше обработчик вешался внутри renderPricesEditor и дублировался после каждого сохранения
-  document.getElementById('savePricesBtn').addEventListener('click', function() {
-    const wrap = document.getElementById('pricesTableWrap');
-    const usdRateNow = state.rates.USD || 1;
-    const inputs = wrap.querySelectorAll('.price-input');
-    let updated = 0;
-    inputs.forEach(input => {
-      const assetId = input.dataset.id;
-      const val = parseFloat(input.value);
-      if (!isNaN(val) && val >= 0) {
-        state.marketPrices[assetId] = {
-          priceUSD: val,
-          price: val * usdRateNow,
-          lastUpdated: new Date().toISOString()
-        };
-        updated++;
-      }
-    });
-    if (updated > 0) {
-      save();
-      refreshAssets();
-      toast(`Цены обновлены для ${updated} активов`);
-      renderAll();
-    } else {
-      toast('Нет изменений для сохранения', 'danger');
-    }
-  });
-};
+RENDERERS.prices = (root) => renderPrices(root, { setActions, renderAll, getClassLabel, toast });
 
 // ============================================================
 // VIEW: PORTFOLIO (с процентами напротив активов, XIRR с пометкой,
@@ -764,98 +694,7 @@ function exportHtmlReport() {
 }
 
 // ======= FORECAST =======
-RENDERERS.forecast = function(root) {
-  setActions(`<button class="btn btn-accent" id="actAddGoal">${icon('plus')}Новая цель</button>`);
-  const snaps = state.snapshots.slice().sort((a,b) => a.date.localeCompare(b.date));
-  const currentTotal = computeTotalCapital();
-  const avgSavings3 = computeAvgMonthlySavings(3);
-  const avgSavings6 = computeAvgMonthlySavings(6);
-
-  let forecastNote = '', projLabels = [], projValues = [], lastRealIdx = -1;
-  if (snaps.length >= 2) {
-    const first = new Date(snaps[0].date).getTime();
-    const pts = snaps.map(s => ({ x: (new Date(s.date).getTime() - first) / 86400000, y: s.totalBYN }));
-    const lr = linearForecast(pts);
-    projLabels = snaps.map(s => fmtDate(s.date));
-    projValues = snaps.map(s => s.totalBYN);
-    lastRealIdx = projValues.length - 1;
-    if (lr) {
-      const lastX = pts[pts.length - 1].x;
-      for (let i = 1; i <= 6; i++) {
-        const fx = lastX + i*30;
-        const fy = lr.intercept + lr.slope * fx;
-        const fd = new Date(first + fx * 86400000);
-        projLabels.push(fmtDate(fd.toISOString()));
-        projValues.push(Math.max(0, fy));
-      }
-      forecastNote = `Линейная регрессия по ${snaps.length} снимкам — тренд ${lr.slope >= 0 ? '+' : ''}${fmt(lr.slope * 30, 2)} BYN/мес.`;
-    }
-  } else {
-    const monthly = avgSavings3 || avgSavings6 || 0;
-    projLabels = ['Сейчас']; projValues = [currentTotal]; lastRealIdx = 0;
-    for (let i = 1; i <= 6; i++) {
-      const d = new Date(); d.setMonth(d.getMonth() + i);
-      projLabels.push(d.toLocaleDateString('ru-RU', {month:'short', year:'2-digit'}));
-      projValues.push(currentTotal + monthly * i);
-    }
-    forecastNote = snaps.length < 2 ? `Недостаточно снимков портфеля для тренда — прогноз построен по среднемесячной разнице доходов/расходов (${fmt(monthly,2)} BYN/мес). Сделайте 2+ снимка на вкладке «Портфель» для более точного прогноза.` : '';
-  }
-
-  root.innerHTML = `
-    <div class="grid grid-3" style="margin-bottom:18px">
-      <div class="card"><div class="kpi"><div class="kpi-label">Капитал сейчас (BYN)</div><div class="kpi-value">${fmt(currentTotal,2)}</div></div></div>
-      <div class="card"><div class="kpi"><div class="kpi-label">Сред. баланс/мес (3 мес.)</div><div class="kpi-value" style="color:${avgSavings3>=0?'var(--positive)':'var(--negative)'}">${avgSavings3>=0?'+':''}${fmt(avgSavings3,2)}</div></div></div>
-      <div class="card"><div class="kpi"><div class="kpi-label">Сред. баланс/мес (6 мес.)</div><div class="kpi-value" style="color:${avgSavings6>=0?'var(--positive)':'var(--negative)'}">${avgSavings6>=0?'+':''}${fmt(avgSavings6,2)}</div></div></div>
-    </div>
-    <div class="card" style="margin-bottom:18px">
-      <div class="card-title">Проекция капитала</div>
-      <div class="card-sub">${forecastNote || 'Сплошная линия — факт по снимкам, пунктир — прогноз на 6 месяцев вперёд'}</div>
-      <canvas id="chartForecast" height="100"></canvas>
-    </div>
-    <div class="section-divider"><span class="label">Цели</span><div class="line"></div></div>
-    <div class="grid grid-2" id="goalsGrid">
-      ${state.goals.length === 0 ? `<div class="card"><div class="empty">${icon('target')}<div class="empty-title">Целей пока нет</div></div></div>` :
-      state.goals.map(g => {
-        const pct = g.targetBYN > 0 ? Math.min(100, currentTotal / g.targetBYN * 100) : 0;
-        const monthly = avgSavings3 !== 0 ? avgSavings3 : avgSavings6;
-        const remaining = g.targetBYN - currentTotal;
-        let etaText;
-        if (remaining <= 0) etaText = 'Цель достигнута';
-        else if (monthly > 0) { const months = remaining / monthly; etaText = `≈ ${fmt(months,1)} мес.`; }
-        else etaText = 'Недостаточно данных';
-        return `<div class="card">
-          <div class="card-head"><div><div class="card-title">${escapeHtml(g.name)}</div><div class="card-sub">Цель: ${fmt(g.targetBYN,2)} BYN ${g.deadline ? '· до '+fmtDate(g.deadline) : ''}</div></div>
-            <div class="row-actions"><button class="icon-btn" data-editgoal="${g.id}">${icon('edit')}</button><button class="icon-btn" data-delgoal="${g.id}">${icon('trash')}</button></div></div>
-          <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
-          <div class="hint" style="margin-top:8px">${fmt(pct,1)}% · ${etaText}</div>
-          ${g.note ? `<div class="hint" style="margin-top:4px">${escapeHtml(g.note)}</div>` : ''}
-        </div>`;
-      }).join('')}
-    </div>
-  `;
-  document.getElementById('actAddGoal').addEventListener('click', () => openGoalModal());
-  root.querySelectorAll('[data-editgoal]').forEach(b => b.addEventListener('click', () => openGoalModal(b.dataset.editgoal)));
-  root.querySelectorAll('[data-delgoal]').forEach(b => b.addEventListener('click', () => {
-    if (!confirm('Удалить цель?')) return;
-    state.goals = state.goals.filter(g => g.id !== b.dataset.delgoal);
-    logAction('delete_goal', 'Удалена цель'); save(); renderAll();
-  }));
-
-  charts.forecast && charts.forecast.destroy();
-  const splitIdx = lastRealIdx;
-  const solidData = projValues.map((v,i) => i <= splitIdx ? v : null);
-  const dashedData = projValues.map((v,i) => i >= splitIdx ? v : null);
-  if (Chart && document.getElementById('chartForecast')) {
-    charts.forecast = new Chart(document.getElementById('chartForecast'), {
-      type: 'line',
-      data: { labels: projLabels, datasets: [
-        { label: 'Факт', data: solidData, borderColor: '#C9A96A', backgroundColor: 'rgba(201,169,106,.14)', fill: true, tension: .25, pointRadius: 3 },
-        { label: 'Прогноз', data: dashedData, borderColor: '#A29D8F', borderDash: [6,4], fill: false, tension: .25, pointRadius: 2 }
-      ]},
-      options: { scales: { x: { ticks: { color: '#6E6858', maxRotation:0, autoSkip:true }, grid: { display: false } }, y: { ticks: { color: '#6E6858' }, grid: { color: 'rgba(28,25,18,0.07)' } } }, plugins: { legend: { labels: { color: '#6E6858' } } } }
-    });
-  }
-};
+RENDERERS.forecast = (root) => renderForecast(root, { setActions, renderAll, toast, computeAvgMonthlySavings, linearForecast, Chart, charts });
 
 function openGoalModal(editId) {
   const editing = editId ? state.goals.find(g => g.id === editId) : null;
