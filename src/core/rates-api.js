@@ -10,6 +10,7 @@ const TIMEOUT_MS = 4000;
 // Порядок важен: первым идёт самый быстрый рабочий источник.
 // НБРБ оставлен последним — он официальный, но недоступен из-за рубежа (таймаут).
 const SOURCES = [
+  { name: 'Vertex API', url: 'http://127.0.0.1:8000/api/rates', parse: parseVertexAPI },
   { name: 'currency-api', url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/byn.json', parse: parseCurrencyApi },
   { name: 'currency-api (зеркало)', url: 'https://latest.currency-api.pages.dev/v1/currencies/byn.json', parse: parseCurrencyApi },
   { name: 'НБРБ', url: 'https://api.nbrb.by/exrates/rates?periodicity=0', parse: parseNBRB },
@@ -39,6 +40,11 @@ function parseNBRB(list) {
 }
 
 // currency-api отдаёт "сколько валюты за 1 BYN" — нам нужно наоборот
+function parseVertexAPI(data) {
+  // Наш бэкенд уже отдаёт готовое { rates: {USD, EUR, RUB} }
+  return data.rates || {};
+}
+
 function parseCurrencyApi(data) {
   const byn = data.byn || {};
   const rates = {};
