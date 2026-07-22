@@ -1,0 +1,12 @@
+﻿{
+  "rates": { "USD": 2.896, "EUR": 3.30, "RUB": 0.037 },
+  "assets": [
+    { "id": "a1", "name": "BTC", "class": "crypto", "quantity": 0.01, "priceBYN": 62000 },
+    { "id": "a2", "name": "NVDA", "class": "stocks", "quantity": 1, "priceBYN": 600 },
+    { "id": "a3", "name": "Золото", "class": "metals", "quantity": 1, "priceBYN": 379 }
+  ],
+  "deposits": [
+    { "id": "d1", "amount": 11048, "currency": "BYN" }
+  ],
+  "transactions": []
+}

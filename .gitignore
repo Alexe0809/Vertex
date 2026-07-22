@@ -7,23 +7,29 @@ desktop.ini
 .vscode/
 .idea/
 
-# Node (пригодится на этапе Vite)
+# Node
 node_modules/
 dist/
+v2/node_modules/
+v2/dist/
 
-# Локальные бэкапы и экспорты данных
-*.backup.json
-exports/
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
 
-# Бэкапы и данные приложения (личные финансы — никогда не пушить!)
+# Личные данные приложения (реальные финансы — НИКОГДА не коммитить!)
 ledger_*.json
 *_backup.json
+*.backup.json
 transactions_merge.json
 crypto_merge.json
+backend/data/state.json
 
 # Выгрузки банков и бирж
 *.pdf
 *.xlsx
 *.csv
-v2/node_modules/
-v2/dist/
+exports/
