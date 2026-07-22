@@ -90,3 +90,31 @@ async def fetch_rates() -> dict:
         if per_byn:
             rates[cur] = round(1 / per_byn, 4)
     return {"base": "BYN", "rates": rates, "date": data.get("date")}
+# ---------- Хранение состояния в БД (Neon PostgreSQL) ----------
+import json as _json
+from sqlalchemy import select
+from .database import SessionLocal, AppState
+
+
+async def db_load_state() -> dict | None:
+    """Читает состояние приложения из БД (строка id='main')."""
+    async with SessionLocal() as session:
+        row = await session.get(AppState, "main")
+        if row is None:
+            return None
+        try:
+            return _json.loads(row.data)
+        except (ValueError, TypeError):
+            return None
+
+
+async def db_save_state(state: dict) -> None:
+    """Сохраняет состояние приложения в БД (перезаписывает строку id='main')."""
+    payload = _json.dumps(state, ensure_ascii=False)
+    async with SessionLocal() as session:
+        row = await session.get(AppState, "main")
+        if row is None:
+            session.add(AppState(id="main", data=payload))
+        else:
+            row.data = payload
+        await session.commit()
