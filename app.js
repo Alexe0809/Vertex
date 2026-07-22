@@ -8,6 +8,8 @@ import { NAV, DEFAULT_ASSET_TYPES, ASSET_CLASS_COLORS, getColorForClass, STORAGE
 import { ICONS, icon } from './src/icons.js';
 import { state, setState, load, save, logAction, migrateState, defaultState } from './src/state.js';
 import { rateFor } from './src/core/rates.js';
+import { autoUpdateRates } from './src/core/rates-api.js';
+import { autoUpdatePrices } from './src/core/prices-api.js';
 import { depositElapsedMonths, isDepositMatured, computeDepositAccruedValue,
          computeDepositFinalAmount, computeDepositProfit,
          computeDepositsTotal, computeDepositsTotalProfit } from './src/core/deposits.js';
@@ -970,3 +972,8 @@ load();
 initModals();
 initGreeting();
 renderAll();
+autoUpdateRates((res) => { renderAll(); toast('Курсы обновлены: ' + res.source); });
+autoUpdatePrices((r) => {
+  renderAll();
+  toast('Цены обновлены: ' + r.updated + (r.failed.length ? ', не найдены: ' + r.failed.join(', ') : ''));
+});
