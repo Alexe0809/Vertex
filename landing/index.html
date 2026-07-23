@@ -73,52 +73,12 @@
       </div>
     </div>
 
-    <!-- живой мокап приложения -->
+    <!-- реальный экран приложения -->
     <div class="hero-visual reveal" data-delay="140">
-      <div class="mock tilt" id="heroMock">
-        <div class="mock-glow"></div>
-        <div class="mock-top">
-          <span class="mock-chip"><i class="d gold"></i>Капитал, BYN</span>
-          <span class="mock-val" data-count="21108" data-decimals="2">0</span>
-        </div>
-        <div class="mock-body">
-          <div class="mock-card wide">
-            <div class="mock-label">Рост капитала</div>
-            <svg class="spark" viewBox="0 0 320 90" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#C9A468" stop-opacity=".35"/>
-                  <stop offset="1" stop-color="#C9A468" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <path class="spark-area" d="M0,78 L40,74 L80,68 L120,55 L160,46 L200,34 L240,26 L280,16 L320,10 L320,90 L0,90 Z" fill="url(#sparkFill)"/>
-              <path class="spark-line" d="M0,78 L40,74 L80,68 L120,55 L160,46 L200,34 L240,26 L280,16 L320,10"
-                    fill="none" stroke="#C9A468" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="mock-card">
-            <div class="mock-label">Распределение</div>
-            <div class="donut">
-              <svg viewBox="0 0 42 42">
-                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#8F6E38" stroke-dasharray="52 48" stroke-dashoffset="0"/>
-                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#B8935A" stroke-dasharray="33 67" stroke-dashoffset="-52"/>
-                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#D9B36C" stroke-dasharray="10 90" stroke-dashoffset="-85"/>
-                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#7FA98C" stroke-dasharray="5 95" stroke-dashoffset="-95"/>
-              </svg>
-              <div class="donut-mid"><b>6</b><span>классов</span></div>
-            </div>
-          </div>
-          <div class="mock-card">
-            <div class="mock-label">ROI портфеля</div>
-            <div class="mock-metric pos">+17,7%</div>
-            <div class="mock-sub">XIRR · годовых</div>
-          </div>
-          <div class="mock-card">
-            <div class="mock-label">FIRE прогресс</div>
-            <div class="bar"><i style="--w:42%"></i></div>
-            <div class="mock-sub">42% пути</div>
-          </div>
-        </div>
+      <div class="shot-frame tilt float" id="heroShot">
+        <div class="shot-glow"></div>
+        <div class="shot-bar"><i></i><i></i><i></i><span>vertex — личный капитал</span></div>
+        <img src="img/dashboard.png" alt="Дашборд Vertex: капитал, метрики, графики" width="2880" height="1800" />
       </div>
     </div>
   </div>
@@ -191,59 +151,25 @@
   </div>
 
   <div class="tabs reveal">
-    <button class="tab active" data-tab="dash">Дашборд</button>
-    <button class="tab" data-tab="port">Портфель</button>
-    <button class="tab" data-tab="fore">Прогноз</button>
+    <button class="tab active" data-tab="dashboard">Дашборд</button>
+    <button class="tab" data-tab="portfolio">Портфель</button>
+    <button class="tab" data-tab="reports">Отчёты</button>
+    <button class="tab" data-tab="forecast">Прогноз</button>
   </div>
 
   <div class="screen reveal" data-delay="80">
-    <div class="screen-bar"><i></i><i></i><i></i><span>vertex — личный капитал</span></div>
-
-    <div class="pane active" data-pane="dash">
-      <div class="pane-grid">
-        <div class="p-card big">
-          <div class="p-label">Текущий капитал</div>
-          <div class="p-big"><span data-count="21108" data-decimals="2">0</span> <em>BYN</em></div>
-          <div class="p-row">
-            <div><span>Доход</span><b class="pos">+3 240</b></div>
-            <div><span>Расход</span><b class="neg">−1 890</b></div>
-            <div><span>Баланс</span><b class="pos">+1 350</b></div>
-          </div>
-        </div>
-        <div class="p-card">
-          <div class="p-label">Ключевые метрики</div>
-          <div class="p-metrics">
-            <div><span>Норма сбережений</span><b>41,7%</b></div>
-            <div><span>Подушка</span><b>5,2 мес</b></div>
-            <div><span>ROI</span><b class="pos">+17,7%</b></div>
-            <div><span>Риск</span><b class="ok">Низкий</b></div>
-          </div>
-        </div>
-      </div>
+    <div class="shot-bar">
+      <i></i><i></i><i></i>
+      <span id="shotTitle">vertex — дашборд</span>
     </div>
-
-    <div class="pane" data-pane="port">
-      <div class="p-list">
-        <div class="p-row-item"><i class="d" style="--c:#B8935A"></i><span>Кэш</span><b>7 029,02</b><em>33,3%</em></div>
-        <div class="p-row-item"><i class="d" style="--c:#D9B36C"></i><span>Криптовалюта</span><b>1 030,40</b><em>4,9%</em></div>
-        <div class="p-row-item"><i class="d" style="--c:#7FA98C"></i><span>Акции</span><b>603,49</b><em>2,9%</em></div>
-        <div class="p-row-item"><i class="d" style="--c:#C9A468"></i><span>Металлы</span><b>379,10</b><em>1,8%</em></div>
-        <div class="p-row-item"><i class="d" style="--c:#8F6E38"></i><span>Депозиты</span><b>11 048,07</b><em>52,3%</em></div>
-      </div>
-    </div>
-
-    <div class="pane" data-pane="fore">
-      <div class="p-card big">
-        <div class="p-label">Проекция капитала · 6 месяцев</div>
-        <svg class="fore-chart" viewBox="0 0 520 160" preserveAspectRatio="none">
-          <path class="fore-area" d="M0,140 L65,132 L130,120 L195,104 L260,88 L325,70 L390,52 L455,34 L520,20 L520,160 L0,160 Z" fill="url(#sparkFill)"/>
-          <path class="fore-solid" d="M0,140 L65,132 L130,120 L195,104 L260,88" fill="none" stroke="#C9A468" stroke-width="2.5"/>
-          <path class="fore-dash" d="M260,88 L325,70 L390,52 L455,34 L520,20" fill="none" stroke="#A29D8F" stroke-width="2.5" stroke-dasharray="6 5"/>
-        </svg>
-        <div class="p-row"><div><span>Тренд</span><b class="pos">+1 420 BYN/мес</b></div><div><span>FIRE</span><b>42%</b></div></div>
-      </div>
+    <div class="shots">
+      <img class="shot active" data-pane="dashboard" src="img/dashboard.png" alt="Дашборд: капитал, ключевые метрики, рост капитала и распределение активов" width="2880" height="1800" loading="lazy" />
+      <img class="shot" data-pane="portfolio" src="img/portfolio.png" alt="Портфель: активы по классам, доли, доходность, депозиты" width="2880" height="1800" loading="lazy" />
+      <img class="shot" data-pane="reports" src="img/reports.png" alt="Отчёты: динамика доходов и расходов, структура трат" width="2880" height="1800" loading="lazy" />
+      <img class="shot" data-pane="forecast" src="img/forecast.png" alt="Прогноз: проекция капитала и финансовые цели" width="2880" height="1800" loading="lazy" />
     </div>
   </div>
+  <p class="note reveal">Данные на скриншотах — демонстрационные.</p>
 </section>
 
 <!-- ================= STACK ================= -->

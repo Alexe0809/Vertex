@@ -330,3 +330,52 @@ h1{font-size:clamp(42px,6.2vw,76px);margin:22px 0 20px}
 }
 :focus-visible{outline:none;box-shadow:0 0 0 2px rgba(230,215,184,.6),0 0 0 5px rgba(230,215,184,.15)}
 ::selection{background:var(--gold-2);color:#12100a}
+
+
+/* ============================================================
+   СКРИНШОТЫ ПРИЛОЖЕНИЯ
+   ============================================================ */
+
+/* Рамка «окна браузера» вокруг снимка */
+.shot-frame{
+  position:relative;border-radius:16px;overflow:hidden;
+  border:1px solid var(--border);
+  background:linear-gradient(160deg,rgba(26,32,48,.9),rgba(12,16,26,.95));
+  backdrop-filter:blur(18px);
+  box-shadow:0 40px 90px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.05) inset;
+  transform-style:preserve-3d;
+  transition:transform 420ms var(--gentle),box-shadow var(--slow) var(--gentle)
+}
+.shot-frame:hover{box-shadow:0 50px 110px rgba(0,0,0,.68),0 0 0 1px var(--border-hi)}
+.shot-glow{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(460px circle at var(--mx,50%) var(--my,0%),rgba(230,215,184,.13),transparent 60%);
+  opacity:0;transition:opacity var(--mid)}
+.shot-frame:hover .shot-glow{opacity:1}
+
+.shot-bar{display:flex;align-items:center;gap:7px;padding:12px 16px;
+  border-bottom:1px solid var(--border);background:rgba(255,255,255,.025)}
+.shot-bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.13)}
+.shot-bar i:first-child{background:rgba(217,115,106,.5)}
+.shot-bar i:nth-child(2){background:rgba(201,164,104,.5)}
+.shot-bar i:nth-child(3){background:rgba(111,191,142,.45)}
+.shot-bar span{margin-left:10px;font-family:var(--font-m);font-size:11px;color:var(--faint)}
+
+.shot-frame img{display:block;width:100%;height:auto}
+
+/* Мягкое парение снимка в hero */
+.float{animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-9px)}}
+.float:hover{animation-play-state:paused}
+
+/* Галерея с кроссфейдом */
+.screen{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--border);
+  background:linear-gradient(160deg,rgba(22,28,42,.88),rgba(12,16,26,.95));
+  backdrop-filter:blur(20px);box-shadow:0 40px 90px rgba(0,0,0,.5)}
+.shots{position:relative;display:grid}
+.shot{grid-area:1/1;width:100%;height:auto;display:block;
+  opacity:0;transform:scale(1.012);
+  transition:opacity 460ms var(--swift),transform 620ms var(--swift);
+  pointer-events:none}
+.shot.active{opacity:1;transform:none;pointer-events:auto}
+
+.note{text-align:center;margin-top:18px;font-size:12.5px;color:var(--faint)}

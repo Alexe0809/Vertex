@@ -67,28 +67,11 @@
     counters.forEach(el => counterIO.observe(el));
   }
 
-  /* ---------- 3. Мокап: запуск внутренних анимаций ---------- */
-  const mock = document.getElementById('heroMock');
-  if (mock) {
-    if (reduced) {
-      mock.classList.add('in');
-    } else {
-      const mockIO = new IntersectionObserver((entries, obs) => {
-        entries.forEach(e => {
-          if (!e.isIntersecting) return;
-          e.target.classList.add('in');
-          obs.unobserve(e.target);
-        });
-      }, { threshold: 0.3 });
-      mockIO.observe(mock);
-    }
-  }
-
-  /* ---------- 4. 3D-наклон за курсором ---------- */
-  // Карточка слегка поворачивается вслед за мышью + световое пятно.
+  /* ---------- 3. 3D-наклон за курсором ---------- */
+  // Элемент слегка поворачивается вслед за мышью + световое пятно.
   if (!reduced && window.matchMedia('(pointer: fine)').matches) {
     document.querySelectorAll('.tilt, .card').forEach(el => {
-      const strength = el.classList.contains('mock') ? 6 : 4;
+      const strength = el.classList.contains('shot-frame') ? 5 : 4;
 
       el.addEventListener('mousemove', e => {
         const r = el.getBoundingClientRect();
@@ -108,7 +91,7 @@
     });
   }
 
-  /* ---------- 5. Навигация: фон при скролле ---------- */
+  /* ---------- 4. Навигация: фон при скролле ---------- */
   const nav = document.getElementById('nav');
   let ticking = false;
 
@@ -123,19 +106,28 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* ---------- 6. Переключение экранов интерфейса ---------- */
+  /* ---------- 5. Галерея скриншотов ---------- */
   const tabs = document.querySelectorAll('.tab');
-  const panes = document.querySelectorAll('.pane');
+  const shots = document.querySelectorAll('.shot');
+  const shotTitle = document.getElementById('shotTitle');
+
+  const TITLES = {
+    dashboard: 'vertex — дашборд',
+    portfolio: 'vertex — портфель',
+    reports:   'vertex — отчёты',
+    forecast:  'vertex — прогноз'
+  };
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const name = tab.dataset.tab;
       tabs.forEach(t => t.classList.toggle('active', t === tab));
-      panes.forEach(p => p.classList.toggle('active', p.dataset.pane === name));
+      shots.forEach(s => s.classList.toggle('active', s.dataset.pane === name));
+      if (shotTitle && TITLES[name]) shotTitle.textContent = TITLES[name];
     });
   });
 
-  /* ---------- 7. Мобильное меню ---------- */
+  /* ---------- 6. Мобильное меню ---------- */
   const burger = document.getElementById('burger');
   if (burger) {
     burger.addEventListener('click', () => {
@@ -148,7 +140,7 @@
     });
   }
 
-  /* ---------- 8. Параллакс орбов фона ---------- */
+  /* ---------- 7. Параллакс орбов фона ---------- */
   if (!reduced) {
     const orbs = document.querySelectorAll('.orb');
     let px = 0, py = 0, raf = null;
