@@ -1,16 +1,20 @@
-﻿// Автозагрузка курсов валют. Цепочка источников с таймаутом:
+// Автозагрузка курсов валют. Цепочка источников с таймаутом:
 // 1) НБРБ (официальный, но не всегда доступен из-за рубежа)
 // 2) currency-api через jsDelivr CDN (тот же CDN, откуда грузится Chart.js)
 // 3) зеркало currency-api на pages.dev
 import { state, save } from '../state.js';
 
 const WANTED = ['USD', 'EUR', 'RUB'];
+
+// Локальный бэкенд пробуем только когда сайт открыт локально.
+// В интернете (Netlify) его нет — не тратим секунду на заведомый таймаут.
+const IS_LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 const TIMEOUT_MS = 4000;
 
 // Порядок важен: первым идёт самый быстрый рабочий источник.
 // НБРБ оставлен последним — он официальный, но недоступен из-за рубежа (таймаут).
 const SOURCES = [
-  { name: 'Vertex API', url: 'http://127.0.0.1:8000/api/rates', parse: parseVertexAPI },
+  ...(IS_LOCAL ? [{ name: 'Vertex API', url: 'http://127.0.0.1:8000/api/rates', parse: parseVertexAPI }] : []),
   { name: 'currency-api', url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/byn.json', parse: parseCurrencyApi },
   { name: 'currency-api (зеркало)', url: 'https://latest.currency-api.pages.dev/v1/currencies/byn.json', parse: parseCurrencyApi },
   { name: 'НБРБ', url: 'https://api.nbrb.by/exrates/rates?periodicity=0', parse: parseNBRB },
