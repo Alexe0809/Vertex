@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vertex — личный финансовый штаб</title>
+<meta name="description" content="Vertex — приложение для управления личным капиталом: портфель, депозиты, транзакции, прогноз и цели в одном месте." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <span class="orb orb-1"></span>
+  <span class="orb orb-2"></span>
+  <span class="orb orb-3"></span>
+  <div class="grid-lines"></div>
+</div>
+
+<!-- ================= NAV ================= -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="mark">
+      <svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true">
+        <defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#F5EBD3"/><stop offset=".5" stop-color="#E6D7B8"/><stop offset="1" stop-color="#AE8B4E"/>
+        </linearGradient></defs>
+        <path d="M13 21 L25 45 L31 33" fill="none" stroke="url(#gm)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+        <path d="M25 19 L37 45 L51 19" fill="none" stroke="url(#gm)" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="brand-name">VERTEX</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#features">Возможности</a>
+    <a href="#preview">Интерфейс</a>
+    <a href="#stack">Технологии</a>
+  </nav>
+  <a class="btn btn-gold nav-cta" href="/index.html">Открыть приложение <span class="arr">→</span></a>
+  <button class="burger" id="burger" aria-label="Меню"><span></span><span></span></button>
+</header>
+
+<!-- ================= HERO ================= -->
+<main id="top">
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow reveal">
+        <span class="dot"></span> Личные финансы. Под контролем.
+      </div>
+      <h1 class="reveal" data-delay="60">
+        Капитал —<br>это <span class="grad">стратегия</span>.
+      </h1>
+      <p class="lead reveal" data-delay="120">
+        Vertex собирает активы, депозиты и денежные потоки в единую картину:
+        реальная доходность, прогноз капитала и путь к финансовым целям — без таблиц и хаоса.
+      </p>
+      <div class="hero-cta reveal" data-delay="180">
+        <a class="btn btn-gold btn-lg" href="/index.html">
+          Открыть Vertex <span class="arr">→</span>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="#preview">
+          <span class="play">▸</span> Посмотреть интерфейс
+        </a>
+      </div>
+      <div class="hero-badges reveal" data-delay="240">
+        <span>Данные только у вас</span><span class="sep"></span>
+        <span>Без подписок</span><span class="sep"></span>
+        <span>Работает офлайн</span>
+      </div>
+    </div>
+
+    <!-- живой мокап приложения -->
+    <div class="hero-visual reveal" data-delay="140">
+      <div class="mock tilt" id="heroMock">
+        <div class="mock-glow"></div>
+        <div class="mock-top">
+          <span class="mock-chip"><i class="d gold"></i>Капитал, BYN</span>
+          <span class="mock-val" data-count="21108" data-decimals="2">0</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-card wide">
+            <div class="mock-label">Рост капитала</div>
+            <svg class="spark" viewBox="0 0 320 90" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#C9A468" stop-opacity=".35"/>
+                  <stop offset="1" stop-color="#C9A468" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path class="spark-area" d="M0,78 L40,74 L80,68 L120,55 L160,46 L200,34 L240,26 L280,16 L320,10 L320,90 L0,90 Z" fill="url(#sparkFill)"/>
+              <path class="spark-line" d="M0,78 L40,74 L80,68 L120,55 L160,46 L200,34 L240,26 L280,16 L320,10"
+                    fill="none" stroke="#C9A468" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="mock-card">
+            <div class="mock-label">Распределение</div>
+            <div class="donut">
+              <svg viewBox="0 0 42 42">
+                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#8F6E38" stroke-dasharray="52 48" stroke-dashoffset="0"/>
+                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#B8935A" stroke-dasharray="33 67" stroke-dashoffset="-52"/>
+                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#D9B36C" stroke-dasharray="10 90" stroke-dashoffset="-85"/>
+                <circle class="ring" cx="21" cy="21" r="15.9" stroke="#7FA98C" stroke-dasharray="5 95" stroke-dashoffset="-95"/>
+              </svg>
+              <div class="donut-mid"><b>6</b><span>классов</span></div>
+            </div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-label">ROI портфеля</div>
+            <div class="mock-metric pos">+17,7%</div>
+            <div class="mock-sub">XIRR · годовых</div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-label">FIRE прогресс</div>
+            <div class="bar"><i style="--w:42%"></i></div>
+            <div class="mock-sub">42% пути</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a class="scroll-hint" href="#stats" aria-label="Листать вниз"><span></span></a>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="stats" id="stats">
+  <div class="stat reveal"><b data-count="7">0</b><span>разделов</span></div>
+  <div class="stat reveal" data-delay="60"><b data-count="13">0</b><span>модулей кода</span></div>
+  <div class="stat reveal" data-delay="120"><b data-count="4">0</b><span>источника курсов</span></div>
+  <div class="stat reveal" data-delay="180"><b data-count="100">0</b><span>% данных у вас</span></div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="section" id="features">
+  <div class="head reveal">
+    <div class="eyebrow"><span class="dot"></span> Возможности</div>
+    <h2>Всё о капитале — <span class="grad">на одном экране</span></h2>
+    <p class="sub">Семь разделов, которые закрывают полный цикл: от записи расхода до прогноза пенсии.</p>
+  </div>
+
+  <div class="cards">
+    <article class="card tilt reveal">
+      <div class="ic">◈</div>
+      <h3>Портфель</h3>
+      <p>Активы по классам: кэш, крипта, акции, металлы, депозиты, займы. Доли, стоимость, доходность каждой позиции.</p>
+      <div class="card-tag">ROI · XIRR · CAGR</div>
+    </article>
+    <article class="card tilt reveal" data-delay="60">
+      <div class="ic">⇄</div>
+      <h3>Транзакции</h3>
+      <p>Доходы, расходы, переводы и инвестиции. Двойная запись: покупка актива автоматически списывает кэш.</p>
+      <div class="card-tag">Категории · фильтры</div>
+    </article>
+    <article class="card tilt reveal" data-delay="120">
+      <div class="ic">◷</div>
+      <h3>Депозиты</h3>
+      <p>Простые проценты и капитализация, накопленный доход на любую дату, автозакрытие по сроку.</p>
+      <div class="card-tag">Точность до дня</div>
+    </article>
+    <article class="card tilt reveal" data-delay="180">
+      <div class="ic">↗</div>
+      <h3>Прогноз</h3>
+      <p>Линейная регрессия по снимкам портфеля, проекция на 6 месяцев и расчёт прогресса к FIRE.</p>
+      <div class="card-tag">Цели · сроки</div>
+    </article>
+    <article class="card tilt reveal" data-delay="240">
+      <div class="ic">⟳</div>
+      <h3>Живые цены</h3>
+      <p>Курсы валют, криптовалюты, металлы и акции подтягиваются автоматически с резервными источниками.</p>
+      <div class="card-tag">4 источника · фолбэк</div>
+    </article>
+    <article class="card tilt reveal" data-delay="300">
+      <div class="ic">▤</div>
+      <h3>Отчёты</h3>
+      <p>Динамика доходов и расходов, структура трат, экспорт данных и готовый отчёт для анализа в ИИ.</p>
+      <div class="card-tag">Графики · экспорт</div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= PREVIEW ================= -->
+<section class="section" id="preview">
+  <div class="head reveal">
+    <div class="eyebrow"><span class="dot"></span> Интерфейс</div>
+    <h2>Спокойный дизайн для <span class="grad">серьёзных цифр</span></h2>
+    <p class="sub">Глассморфизм, мягкие переходы и моноширинные цифры — чтобы данные читались, а не отвлекали.</p>
+  </div>
+
+  <div class="tabs reveal">
+    <button class="tab active" data-tab="dash">Дашборд</button>
+    <button class="tab" data-tab="port">Портфель</button>
+    <button class="tab" data-tab="fore">Прогноз</button>
+  </div>
+
+  <div class="screen reveal" data-delay="80">
+    <div class="screen-bar"><i></i><i></i><i></i><span>vertex — личный капитал</span></div>
+
+    <div class="pane active" data-pane="dash">
+      <div class="pane-grid">
+        <div class="p-card big">
+          <div class="p-label">Текущий капитал</div>
+          <div class="p-big"><span data-count="21108" data-decimals="2">0</span> <em>BYN</em></div>
+          <div class="p-row">
+            <div><span>Доход</span><b class="pos">+3 240</b></div>
+            <div><span>Расход</span><b class="neg">−1 890</b></div>
+            <div><span>Баланс</span><b class="pos">+1 350</b></div>
+          </div>
+        </div>
+        <div class="p-card">
+          <div class="p-label">Ключевые метрики</div>
+          <div class="p-metrics">
+            <div><span>Норма сбережений</span><b>41,7%</b></div>
+            <div><span>Подушка</span><b>5,2 мес</b></div>
+            <div><span>ROI</span><b class="pos">+17,7%</b></div>
+            <div><span>Риск</span><b class="ok">Низкий</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" data-pane="port">
+      <div class="p-list">
+        <div class="p-row-item"><i class="d" style="--c:#B8935A"></i><span>Кэш</span><b>7 029,02</b><em>33,3%</em></div>
+        <div class="p-row-item"><i class="d" style="--c:#D9B36C"></i><span>Криптовалюта</span><b>1 030,40</b><em>4,9%</em></div>
+        <div class="p-row-item"><i class="d" style="--c:#7FA98C"></i><span>Акции</span><b>603,49</b><em>2,9%</em></div>
+        <div class="p-row-item"><i class="d" style="--c:#C9A468"></i><span>Металлы</span><b>379,10</b><em>1,8%</em></div>
+        <div class="p-row-item"><i class="d" style="--c:#8F6E38"></i><span>Депозиты</span><b>11 048,07</b><em>52,3%</em></div>
+      </div>
+    </div>
+
+    <div class="pane" data-pane="fore">
+      <div class="p-card big">
+        <div class="p-label">Проекция капитала · 6 месяцев</div>
+        <svg class="fore-chart" viewBox="0 0 520 160" preserveAspectRatio="none">
+          <path class="fore-area" d="M0,140 L65,132 L130,120 L195,104 L260,88 L325,70 L390,52 L455,34 L520,20 L520,160 L0,160 Z" fill="url(#sparkFill)"/>
+          <path class="fore-solid" d="M0,140 L65,132 L130,120 L195,104 L260,88" fill="none" stroke="#C9A468" stroke-width="2.5"/>
+          <path class="fore-dash" d="M260,88 L325,70 L390,52 L455,34 L520,20" fill="none" stroke="#A29D8F" stroke-width="2.5" stroke-dasharray="6 5"/>
+        </svg>
+        <div class="p-row"><div><span>Тренд</span><b class="pos">+1 420 BYN/мес</b></div><div><span>FIRE</span><b>42%</b></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STACK ================= -->
+<section class="section" id="stack">
+  <div class="head reveal">
+    <div class="eyebrow"><span class="dot"></span> Под капотом</div>
+    <h2>Собрано <span class="grad">вручную</span></h2>
+    <p class="sub">Без фреймворков во фронтенде: чистые ES-модули, слоистая архитектура и тесты на финансовую математику.</p>
+  </div>
+  <div class="stack reveal">
+    <span>JavaScript ES Modules</span><span>Chart.js</span><span>Vitest</span>
+    <span>Python</span><span>FastAPI</span><span>PostgreSQL</span>
+    <span>SQLAlchemy</span><span>Docker</span><span>Git · CI/CD</span>
+  </div>
+  <div class="arch reveal" data-delay="80">
+    <div class="layer"><b>ui/</b><span>views · shell · dom</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer"><b>core/</b><span>portfolio · deposits · rates</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer"><b>state.js</b><span>единый источник данных</span></div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+  <div class="cta-inner reveal">
+    <h2>Начните видеть <span class="grad">полную картину</span></h2>
+    <p>Открывается в браузере. Ничего не нужно устанавливать, регистрироваться и платить.</p>
+    <a class="btn btn-gold btn-lg" href="/index.html">Открыть Vertex <span class="arr">→</span></a>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>Vertex — личный капитал</span>
+  <span class="foot-dot">·</span>
+  <a href="https://github.com/Alexe0809/Vertex" target="_blank" rel="noopener">Исходный код</a>
+</footer>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
