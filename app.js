@@ -17,7 +17,8 @@ import { computeAssetQuantity, computeXIRR, refreshAssets, assetValueBYN,
          computePortfolioTotals, computeTotalCapital } from './src/core/portfolio.js';
 import { fmt, fmtUSD, fmtPct, fmtDate, fmtDateTime, round2, monthKey, uid, txAmountBYN } from './src/utils.js';
 import { toast, openModal, closeModal, initModals, escapeHtml} from './src/ui/dom.js';
-import { renderSidebar, renderMobileNav, renderTicker, initGreeting } from './src/ui/shell.js';
+import { renderSidebar, renderMobileNav, renderMobileHeader, renderTicker, initGreeting,
+         initNavSheet, initResponsiveShell, syncActionsPlacement } from './src/ui/shell.js';
 import { renderDashboard } from './src/ui/views/dashboard.js';
 import { renderTransactions, openTxModal, deleteTx } from './src/ui/views/transactions.js';
 import { renderPortfolio, openEditAssetModal, deleteAsset, openAssetHistory } from './src/ui/views/portfolio.js';
@@ -211,12 +212,34 @@ const RENDERERS = {};
 function renderAll() {
   renderSidebar(goTo);
   renderMobileNav(goTo);
+  renderMobileHeader();
   renderTicker(computeMonthFlow(new Date().toISOString().slice(0,7)));
   const navItem = NAV.find(n => n.id === state.ui.view) || NAV[0];
   document.getElementById('pageTitle').textContent = navItem.label;
   document.getElementById('pageSub').textContent = navItem.sub;
   const viewsEl = document.getElementById('views');
   if (RENDERERS[state.ui.view]) RENDERERS[state.ui.view](viewsEl);
+  syncActionsPlacement();
+  labelTableCells(viewsEl);
+}
+
+// На узком экране таблицы перестраиваются в карточки (CSS), но ячейке нужен
+// заголовок своей колонки — прокидываем его в data-th после каждой отрисовки.
+function labelTableCells(root) {
+  root.querySelectorAll('table').forEach(table => {
+    const heads = [...table.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    if (!heads.length) return;
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      [...tr.children].forEach((td, i) => {
+        if (heads[i]) td.setAttribute('data-th', heads[i]);
+        // «Актив: —», «Описание: —» — на телефоне это только шум,
+        // в режиме карточек такие ячейки скрываются
+        const txt = td.textContent.trim();
+        const blank = !td.children.length && (txt === '' || txt === '—' || txt === '-');
+        td.classList.toggle('td-empty', blank);
+      });
+    });
+  });
 }
 
 function setActions(html) {
@@ -809,6 +832,8 @@ window.closeModal = closeModal;
 // ======= INIT =======
 load();
 initModals();
+initNavSheet();
+initResponsiveShell();
 initGreeting();
 renderAll();
 autoUpdateRates((res) => { renderAll(); toast('Курсы обновлены: ' + res.source); });

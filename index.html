@@ -1,20 +1,29 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- приложение всегда светлое: без этого iOS в тёмной теме перекрашивает
+         системные контролы (поля, выпадающие списки) и они выпадают из стиля -->
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#F4F2ED" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Vertex" />
+    <meta name="format-detection" content="telephone=no" />
     <title>Vertex — личный бюджет</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
 </head>
 <body class="light">
     <div id="app">
         <aside class="sidebar" id="sidebar"></aside>
         <div class="main">
-            <div class="mobile-topbar" id="mobileNav"></div>
+            <header class="mobile-header" id="mobileHeader"></header>
             <div class="topbar">
                 <span id="pageTitle" hidden></span>
                 <span id="pageSub" hidden></span>
@@ -25,6 +34,15 @@
                 </div>
             </div>
             <main id="views"></main>
+        </div>
+    </div>
+
+    <nav class="tabbar" id="mobileNav" aria-label="Основная навигация"></nav>
+
+    <div class="sheet-backdrop" id="navSheet" hidden>
+        <div class="sheet" role="dialog" aria-modal="true" aria-label="Ещё разделы">
+            <div class="sheet-grabber" aria-hidden="true"></div>
+            <div class="sheet-list" id="navSheetList"></div>
         </div>
     </div>
 

@@ -10,10 +10,13 @@ export function toast(msg, kind) {
 export function openModal(html) {
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('modalBackdrop').classList.add('active');
+  // iOS: без этого фон продолжает скроллиться под открытой модалкой
+  document.body.classList.add('no-scroll');
 }
 export function closeModal() {
   document.getElementById('modalBackdrop').classList.remove('active');
   document.getElementById('modalBody').innerHTML = '';
+  document.body.classList.remove('no-scroll');
 }
 // dom.js
 export function initModals() {

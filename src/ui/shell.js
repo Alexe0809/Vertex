@@ -28,10 +28,108 @@ export function renderSidebar(goTo) {
   el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goTo(b.dataset.go)));
 }
 
+/* Разделы, которые живут в нижнем таб-баре (iOS HIG: не больше 5 вкладок).
+   Остальное уезжает в лист «Ещё». */
+const TAB_IDS = ['dashboard', 'transactions', 'portfolio', 'reports'];
+
+const isMobile = () => window.matchMedia('(max-width:880px)').matches;
+
 export function renderMobileNav(goTo) {
   const el = document.getElementById('mobileNav');
-  el.innerHTML = NAV.map(n => `<button class="${state.ui.view === n.id ? 'active' : ''}" data-go="${n.id}">${icon(n.icon)}${n.label}</button>`).join('');
+  if (!el) return;
+  const tabs = TAB_IDS.map(id => NAV.find(n => n.id === id)).filter(Boolean);
+  const rest = NAV.filter(n => !TAB_IDS.includes(n.id));
+  const restActive = rest.some(n => n.id === state.ui.view);
+
+  el.innerHTML = `
+    ${tabs.map(n => `
+      <button class="tab ${state.ui.view === n.id ? 'active' : ''}" data-go="${n.id}"
+              aria-label="${n.label}" ${state.ui.view === n.id ? 'aria-current="page"' : ''}>
+        ${icon(n.icon)}<span>${n.label}</span>
+      </button>`).join('')}
+    <button class="tab ${restActive ? 'active' : ''}" data-sheet="1" aria-label="Ещё разделы" aria-haspopup="dialog">
+      ${icon('more')}<span>Ещё</span>
+    </button>
+  `;
   el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goTo(b.dataset.go)));
+  el.querySelector('[data-sheet]').addEventListener('click', () => openNavSheet(goTo));
+
+  renderNavSheet(goTo, rest);
+}
+
+/* ---- Лист «Ещё»: нижний sheet со вторичной навигацией ---- */
+function renderNavSheet(goTo, rest) {
+  const list = document.getElementById('navSheetList');
+  if (!list) return;
+  list.innerHTML = rest.map(n => `
+    <button class="sheet-item ${state.ui.view === n.id ? 'active' : ''}" data-go="${n.id}">
+      ${icon(n.icon)}
+      <span class="sheet-item-text"><span class="sheet-item-title">${n.label}</span><span class="sheet-item-sub">${n.sub}</span></span>
+    </button>`).join('');
+  list.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+    closeNavSheet();
+    goTo(b.dataset.go);
+  }));
+}
+
+export function openNavSheet() {
+  const el = document.getElementById('navSheet');
+  if (!el) return;
+  el.hidden = false;
+  requestAnimationFrame(() => el.classList.add('active'));
+  document.body.classList.add('no-scroll');
+}
+
+export function closeNavSheet() {
+  const el = document.getElementById('navSheet');
+  if (!el || el.hidden) return;
+  el.classList.remove('active');
+  document.body.classList.remove('no-scroll');
+  setTimeout(() => { el.hidden = true; }, 220);
+}
+
+export function initNavSheet() {
+  const el = document.getElementById('navSheet');
+  if (!el) return;
+  el.addEventListener('click', e => { if (e.target === el) closeNavSheet(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavSheet(); });
+}
+
+/* ---- Мобильная шапка: марка, название раздела, действия раздела ---- */
+export function renderMobileHeader() {
+  const el = document.getElementById('mobileHeader');
+  if (!el) return;
+  // Перед перерисовкой уводим узел действий из шапки, иначе innerHTML его оторвёт.
+  parkActions();
+  const navItem = NAV.find(n => n.id === state.ui.view) || NAV[0];
+  el.innerHTML = `
+    <div class="mh-brand" aria-hidden="true"><svg viewBox="0 0 64 64" width="22" height="22"><defs><linearGradient id="vgoldMh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5EBD3"/><stop offset="0.5" stop-color="#E6D7B8"/><stop offset="1" stop-color="#AE8B4E"/></linearGradient></defs><path d="M13 21 L25 45 L31 33" fill="none" stroke="url(#vgoldMh)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/><path d="M25 19 L37 45 L51 19" fill="none" stroke="url(#vgoldMh)" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1 class="mh-title">${navItem.label}</h1>
+    <div class="mh-actions" id="mhActions"></div>
+  `;
+  syncActionsPlacement();
+}
+
+/* Кнопки раздела (#pageActions) живут в шапке на телефоне
+   и в строке тикера на десктопе — переносим сам узел, не пересоздавая. */
+function parkActions() {
+  const actions = document.getElementById('pageActions');
+  const bar = document.querySelector('.ticker-bar');
+  if (actions && bar && actions.parentElement !== bar) bar.appendChild(actions);
+}
+
+export function syncActionsPlacement() {
+  const actions = document.getElementById('pageActions');
+  if (!actions) return;
+  const target = isMobile()
+    ? document.getElementById('mhActions')
+    : document.querySelector('.ticker-bar');
+  if (target && actions.parentElement !== target) target.appendChild(actions);
+}
+
+/* Смена ориентации / поворот телефона / ресайз окна */
+export function initResponsiveShell() {
+  window.matchMedia('(max-width:880px)').addEventListener('change', syncActionsPlacement);
 }
 
 export function renderTicker(cashflow) {

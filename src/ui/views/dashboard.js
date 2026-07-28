@@ -156,7 +156,7 @@ export function renderDashboard(root, deps) {
               <div class="section-divider"><span class="label">Последние транзакции</span><div class="line"></div></div>
               <div class="card">
                 <div class="card-head"><div><div class="card-title">Недавние операции</div></div><button class="btn btn-ghost btn-sm" data-go="transactions">Все →</button></div>
-                ${state.transactions.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt)).slice(0,6).map(t => `
+                ${state.transactions.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.createdAt||'').localeCompare(String(a.createdAt||''))).slice(0,6).map(t => `
                   <div class="list-row">
                     <div><div style="font-weight:500">${escapeHtml(t.category)}${t.assetName ? ' ('+escapeHtml(t.assetName)+')' : ''}</div><div class="hint">${fmtDate(t.date)} · ${escapeHtml(t.description||'—')}</div></div>
                     <div class="amt ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'−'}${fmt(t.amount,2)} ${t.currency}</div>

@@ -200,7 +200,7 @@ td.amt{font-family:var(--font-mono);font-weight:500;text-align:right;}
 .field input.mono,.field select.mono{font-family:var(--font-mono);}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
 .field-row{display:flex;gap:10px;}
-.field-row>.field{flex:1;}
+.field-row>.field{flex:1;min-width:0;}
 .hint{font-size:11px;color:var(--text-faint);margin-top:4px;}
 .seg{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
 .seg button{flex:1;background:var(--bg-elev);border:none;color:var(--text-dim);padding:8px;font-size:12px;font-weight:500;border-right:1px solid var(--border);}
@@ -264,23 +264,10 @@ td.amt{font-family:var(--font-mono);font-weight:500;text-align:right;}
 .list-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-soft);}
 .list-row:last-child{border-bottom:none;}
 
-/* mobile nav */
-.mobile-topbar{display:none;}
+/* mobile nav — реализация в блоке VERTEX MOBILE в конце файла */
 @media (max-width:880px){
   .sidebar{display:none;}
-  .mobile-topbar{
-    display:flex;gap:6px;overflow-x:auto;padding:10px 12px;
-    background:var(--bg-elev);border-bottom:1px solid var(--border-soft);
-    position:sticky;top:0;z-index:30;
-  }
-  .mobile-topbar button{
-    flex:none;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);
-    border-radius:7px;padding:7px 12px;font-size:12px;display:flex;align-items:center;gap:6px;white-space:nowrap;
-  }
-  .mobile-topbar button.active{background:var(--surface-2);color:var(--accent);border-color:var(--accent);}
-  .mobile-topbar svg{width:14px;height:14px;}
   .topbar-row{padding:14px 16px 10px;flex-wrap:wrap;}
-  .view{padding:16px 16px 50px;}
 }
 
 /* ============================================================
@@ -763,3 +750,329 @@ body.light .btn-accent{
   background:linear-gradient(135deg,#E8CE94,#D4AD68 55%,#B8935A) !important;
 }
 /* Подписи осей графиков — тоже поднимаем контраст (было #8B8677 ~3.4:1) */
+/* ============================================================
+   VERTEX MOBILE — iOS-слой
+   Safe area, нижние вкладки, тач-цели 44pt, таблицы-карточки,
+   модалки-шторки. Основано на Apple HIG + аудите ui-ux-pro-max.
+   ============================================================ */
+
+:root{
+  --gutter:28px;
+  --tabbar-h:58px;
+  --safe-t:env(safe-area-inset-top, 0px);
+  --safe-b:env(safe-area-inset-bottom, 0px);
+  --safe-l:env(safe-area-inset-left, 0px);
+  --safe-r:env(safe-area-inset-right, 0px);
+}
+
+html{-webkit-text-size-adjust:100%;}
+body{overscroll-behavior-y:none;}
+button,a,label,summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+body.no-scroll{overflow:hidden;}
+
+/* Полная высота экрана без «прыжков» адресной строки Safari */
+#app{min-height:100vh;min-height:100dvh;}
+.sidebar{height:100vh;height:100dvh;}
+
+/* Фон-градиент отдельным фиксированным слоем: background-attachment:fixed
+   на iOS Safari не работает и вызывает перерисовку всего экрана при скролле */
+body{background-attachment:scroll;}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 600px at 85% -10%, rgba(201,169,106,0.10), transparent 60%),
+    radial-gradient(900px 700px at -10% 110%, rgba(110,143,217,0.07), transparent 55%),
+    var(--bg);
+}
+body.light::before{
+  background:
+    radial-gradient(1100px 620px at 88% -12%, rgba(201,169,106,0.16), transparent 60%),
+    radial-gradient(900px 700px at -8% 112%, rgba(120,150,220,0.10), transparent 55%),
+    var(--bg);
+}
+
+/* Контент больше не прилипает к краям экрана (класс .view не использовался) */
+#views{padding:22px var(--gutter) 60px;max-width:100%;overflow-x:clip;}
+
+/* ---- Мобильная шапка ---- */
+.mobile-header{display:none;}
+.mh-title{
+  flex:1;min-width:0;margin:0;
+  font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:-0.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.mh-brand{flex:none;display:flex;align-items:center;}
+.mh-actions{flex:none;display:flex;align-items:center;}
+
+/* ---- Нижний таб-бар ---- */
+.tabbar{display:none;}
+
+/* ---- Нижняя шторка «Ещё» ---- */
+.sheet-backdrop{
+  position:fixed;inset:0;z-index:120;display:flex;align-items:flex-end;
+  background:rgba(6,8,13,0.55);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  opacity:0;transition:opacity 220ms var(--ease);
+}
+body.light .sheet-backdrop{background:rgba(40,35,24,0.32);}
+.sheet-backdrop[hidden]{display:none;}
+.sheet-backdrop.active{opacity:1;}
+.sheet{
+  width:100%;
+  background:var(--surface-2);
+  backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+  border-top:1px solid var(--border);
+  border-radius:22px 22px 0 0;
+  padding:10px calc(var(--safe-r) + 14px) calc(var(--safe-b) + 14px) calc(var(--safe-l) + 14px);
+  box-shadow:0 -12px 40px rgba(0,0,0,0.28);
+  transform:translateY(100%);
+  transition:transform 300ms var(--swift);
+}
+.sheet-backdrop.active .sheet{transform:translateY(0);}
+.sheet-grabber{width:38px;height:4px;border-radius:2px;background:var(--text-faint);opacity:.4;margin:0 auto 10px;}
+.sheet-list{display:flex;flex-direction:column;gap:2px;}
+.sheet-item{
+  display:flex;align-items:center;gap:14px;width:100%;
+  min-height:58px;padding:10px 12px;
+  background:none;border:none;border-radius:14px;
+  color:var(--text);text-align:left;
+}
+.sheet-item svg{width:20px;height:20px;flex:none;color:var(--text-dim);}
+.sheet-item:active{background:var(--accent-soft);}
+.sheet-item.active{background:var(--accent-soft);color:var(--accent-2);}
+.sheet-item.active svg{color:var(--accent-2);}
+.sheet-item-text{min-width:0;}
+.sheet-item-title{display:block;font-size:15px;font-weight:500;}
+.sheet-item-sub{display:block;font-size:12px;color:var(--text-dim);margin-top:1px;}
+
+/* ============================================================ */
+@media (max-width:880px){
+  :root{--gutter:16px;}
+
+  /* Шапка: марка + раздел + действия, с отступом под чёлку */
+  .mobile-header{
+    display:flex;align-items:center;gap:10px;
+    position:sticky;top:0;z-index:40;
+    padding:calc(var(--safe-t) + 7px) calc(var(--safe-r) + var(--gutter)) 7px calc(var(--safe-l) + var(--gutter));
+    background:rgba(10,13,20,0.82);
+    backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+    border-bottom:1px solid var(--border-soft);
+  }
+  body.light .mobile-header{
+    background:rgba(248,246,241,0.84);
+    border-bottom:1px solid var(--border);
+  }
+  .mh-actions .topbar-actions{gap:8px;}
+  .mh-actions .btn{min-height:44px;padding:10px 14px;font-size:13px;}
+
+  /* Тикер уезжает вместе с контентом — экран не съедается двумя липкими барами */
+  .topbar{position:static;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;
+    border-bottom:1px solid var(--border-soft);}
+  body.light .topbar{background:transparent;box-shadow:none;}
+  .ticker-bar{padding:0;}
+  .ticker{
+    padding-left:calc(var(--safe-l) + var(--gutter));
+    scroll-snap-type:x proximity;
+    scroll-padding-left:calc(var(--safe-l) + var(--gutter));
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+  }
+  .ticker::after{content:'';flex:none;width:var(--gutter);}
+  .ticker-chip{
+    scroll-snap-align:start;min-width:0;
+    padding:11px 18px 11px 0;margin-right:18px;
+    border-right:1px solid var(--border-soft);
+  }
+  .ticker-value{font-size:15px;white-space:nowrap;}
+
+  /* Контент: боковые отступы с учётом безопасной зоны, снизу — место под таб-бар */
+  #views{
+    padding:18px calc(var(--safe-r) + var(--gutter)) calc(var(--tabbar-h) + var(--safe-b) + 32px) calc(var(--safe-l) + var(--gutter));
+  }
+
+  /* ---- Нижние вкладки ---- */
+  .tabbar{
+    display:flex;align-items:stretch;gap:2px;
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    padding:6px calc(var(--safe-r) + 6px) calc(var(--safe-b) + 6px) calc(var(--safe-l) + 6px);
+    background:rgba(10,13,20,0.86);
+    backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);
+    border-top:1px solid var(--border-soft);
+  }
+  body.light .tabbar{
+    background:rgba(248,246,241,0.88);
+    border-top:1px solid var(--border);
+    box-shadow:0 -6px 24px rgba(31,26,16,0.06);
+  }
+  .tabbar .tab{
+    flex:1 1 0;min-width:0;min-height:48px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    padding:5px 2px;border:none;border-radius:12px;background:none;
+    color:var(--text-faint);font-size:10.5px;font-weight:500;line-height:1.2;
+    transition:color 160ms var(--gentle), background 160ms var(--gentle);
+  }
+  .tabbar .tab svg{width:22px;height:22px;flex:none;}
+  .tabbar .tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tabbar .tab.active{color:var(--accent-2);background:var(--accent-soft);}
+  .tabbar .tab:active{transform:scale(0.94);transition-duration:80ms;}
+
+  /* ---- Тач-цели: минимум 44pt (Apple HIG) ---- */
+  .btn{min-height:44px;padding:11px 16px;font-size:13.5px;border-radius:12px;}
+  .btn-sm{min-height:44px;padding:10px 14px;font-size:13px;}
+  .btn svg{width:16px;height:16px;}
+  .icon-btn{
+    min-width:44px;min-height:44px;
+    display:inline-flex;align-items:center;justify-content:center;border-radius:12px;
+  }
+  .icon-btn svg{width:18px;height:18px;}
+  .row-actions{gap:6px;}
+  /* Кнопка удаления внутри чипа-категории: 44pt разорвали бы сам чип */
+  .tag:has(.icon-btn){min-height:38px;padding:4px 6px 4px 12px;}
+  .tag .icon-btn{min-width:34px;min-height:34px;border-radius:10px;}
+  .tag .icon-btn svg{width:15px;height:15px;}
+
+  /* Парные поля складываются в столбец — иначе содержимое распирает строку */
+  .field-row{flex-direction:column;gap:0;}
+
+  /* 16px — иначе iOS зумит страницу при фокусе на поле.
+     !important: часть полей в разметке задаёт размер инлайновым style */
+  input,select,textarea{font-size:16px !important;}
+  .field input,.field select,.field textarea{min-height:48px;padding:12px 14px;border-radius:12px;}
+  /* Поля, размеченные инлайновыми стилями (цены, новые тикеры) */
+  .price-input{width:100% !important;min-height:44px !important;padding:10px 12px !important;}
+  /* Чекбоксы: сам контрол мелкий — растим его и делаем тап-зоной всю подпись */
+  input[type=checkbox],input[type=radio]{width:22px;height:22px;flex:none;}
+  label:has(> input[type=checkbox]),label:has(> input[type=radio]){
+    display:flex;align-items:center;gap:10px;min-height:44px;
+  }
+  .filters{gap:10px;}
+  .filters input,.filters select{min-height:44px;padding:10px 12px;border-radius:12px;}
+  .filters input[type=search]{min-width:0;flex:1 1 100%;}
+  .seg{border-radius:12px;}
+  .seg button{min-height:44px;font-size:14px;}
+  select{
+    -webkit-appearance:none;appearance:none;
+    background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+    background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;
+    background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+    padding-right:34px;
+  }
+
+  /* ---- Плотность: карточки и сетки ---- */
+  .grid{gap:12px;}
+  .grid-3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  .grid-3 > .card{min-height:92px;padding:14px;}
+  .card{padding:16px;border-radius:14px;}
+  .card canvas{max-height:240px;}
+  .hero-figure{font-size:clamp(30px,9vw,40px);}
+  .hero-figure span{font-size:16px;}
+  .hero-row{gap:18px;}
+  .section-divider{margin:22px 0 12px;}
+
+  /* Стекло на каждой карточке — главный источник рывков при скролле на iPhone.
+     Оставляем blur только на шапке, таб-баре и шторках. */
+  .card{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(22,27,42,0.92);}
+  body.light .card{background:rgba(255,255,255,0.94);}
+
+  /* Вход экрана без анимации filter:blur() — на iPhone она заставляет
+     перерисовывать весь слой каждый кадр */
+  @keyframes screenInMobile{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  #views > *{animation-name:screenInMobile;animation-duration:var(--t-mid);}
+
+  /* ---- Модалка как нижняя шторка ---- */
+  .modal-backdrop{align-items:flex-end;padding:0;overflow:hidden;}
+  .modal{
+    max-width:none;width:100%;
+    border-radius:22px 22px 0 0;
+    padding:16px calc(var(--safe-r) + var(--gutter)) calc(var(--safe-b) + 16px) calc(var(--safe-l) + var(--gutter));
+    max-height:92vh;max-height:92dvh;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    backdrop-filter:none;-webkit-backdrop-filter:none;
+    animation:sheetUp 300ms var(--swift) both;
+  }
+  body.light .modal{background:rgba(255,255,255,0.97);}
+  .modal::before{
+    content:'';display:block;width:38px;height:4px;border-radius:2px;
+    background:var(--text-faint);opacity:.4;margin:0 auto 12px;
+  }
+  .modal-foot .btn{flex:1;justify-content:center;}
+  @keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+
+  /* ---- Тосты: над таб-баром, во всю ширину ---- */
+  #toast-wrap{
+    left:calc(var(--safe-l) + 12px);right:calc(var(--safe-r) + 12px);
+    bottom:calc(var(--tabbar-h) + var(--safe-b) + 12px);
+  }
+  .toast{max-width:none;font-size:14px;padding:13px 16px;border-radius:12px;}
+}
+
+/* ---- Таблицы превращаются в карточки: на 375px горизонтальный скролл
+        внутри страницы читать невозможно (ширина таблиц до 1270px) ---- */
+@media (max-width:700px){
+  .table-wrap{overflow:visible;}
+  table,tbody,tr,td{display:block;width:100%;}
+  thead{display:none;}
+  tbody tr{
+    background:var(--surface-2);
+    border:1px solid var(--border);border-radius:14px;
+    padding:6px 14px;margin-bottom:10px;
+  }
+  body.light tbody tr{background:rgba(255,255,255,0.72);}
+  tbody tr:last-child{margin-bottom:0;}
+
+  /* Ячейки идут в две колонки «подпись сверху — значение снизу»:
+     так запись занимает ~150px вместо ~350px списком строк */
+  tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 14px;}
+  tbody td{
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+    min-width:0;padding:0;border:none;
+    white-space:normal;text-align:left;overflow-wrap:anywhere;
+  }
+  tbody td::before{
+    content:attr(data-th);
+    color:var(--text-faint);font-family:var(--font-mono);
+    font-size:10px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;
+  }
+  /* Пустые ячейки («—») и ячейки без подписи не занимают место */
+  tbody td.td-empty:not(:has(*)){display:none;}
+  tbody td:empty{display:none;}
+
+  td.amt{font-size:15px;text-align:left;}
+  tbody td:has(.row-actions){
+    grid-column:1 / -1;padding-top:2px;
+    border-top:1px solid var(--border-soft);
+  }
+  tbody td:has(.row-actions)::before{display:none;}
+  .row-actions{justify-content:flex-end;width:100%;}
+
+  tbody tr:hover{background:var(--surface-2);}
+  body.light tbody tr:hover{background:rgba(255,255,255,0.72);}
+}
+
+/* ---- Альбомная ориентация: по высоте всего ~390px, экономим её ---- */
+@media (max-width:880px) and (orientation:landscape) and (max-height:520px){
+  :root{--gutter:24px;--tabbar-h:48px;}
+  .mobile-header{padding-top:calc(var(--safe-t) + 6px);padding-bottom:6px;}
+  .mh-title{font-size:16px;}
+  .tabbar{padding-top:4px;padding-bottom:calc(var(--safe-b) + 4px);}
+  .tabbar .tab{flex-direction:row;gap:8px;min-height:40px;font-size:12px;}
+  .tabbar .tab svg{width:18px;height:18px;}
+  .modal{max-height:96vh;max-height:96dvh;}
+  .card canvas{max-height:200px;}
+}
+
+/* ---- Тач-устройства: hover-эффекты «залипают» после тапа на iOS ---- */
+@media (hover:none){
+  .btn:hover,.icon-btn:hover,.card:hover,.nav-item:hover,.ticker-chip:hover{
+    transform:none;
+  }
+  .card:hover{box-shadow:0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 28px rgba(0,0,0,0.35);}
+  body.light .card:hover{box-shadow:0 1px 0 rgba(255,255,255,0.9) inset, 0 10px 34px rgba(31,26,16,0.08);}
+  .card:hover .card-title::after{width:26px;}
+  .btn-accent:hover::after{transform:translateX(-120%);}
+  tbody tr:hover{background:transparent;}
+  .btn:active{transform:scale(0.97);}
+  tbody tr:active{background:var(--accent-soft);}
+}
